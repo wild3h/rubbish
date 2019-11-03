@@ -1,0 +1,63 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:gravity="center_horizontal">
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </androidx.viewpager.widget.ViewPager>
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#FFFFFF"
+        android:layout_alignParentBottom="true"
+        >
+
+        <TextView
+            android:id="@+id/videoLayout"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/mainselector"
+            android:drawablePadding="0dp"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="首页"
+            android:textColor="#000000"
+            android:textSize="16sp" />
+
+
+
+        <TextView
+            android:id="@+id/musicLayout"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/mainselector"
+            android:drawablePadding="0dp"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="我的"
+            android:textColor="#000000"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/opencamera"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/logo_camera"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:adjustViewBounds ="true"
+        android:background="@drawable/camera_btn"
+        android:scaleType="centerInside"
+        android:clickable="true"
+        android:contextClickable="true"
+        />
+</RelativeLayout>

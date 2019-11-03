@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/frameLayout"
+    tools:context=".MainActivity">
+    <!---
+    使用surfaceView来当作相机的画面 注意要全屏设置 用来美化布局-->
+    <SurfaceView
+        android:id="@+id/surfaceView2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true" />
+    <LinearLayout
+        android:id="@+id/buttonLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="horizontal"
+        android:background="?android:attr/selectableItemBackground">
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/similarbutton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/buttonLayout"
+        android:orientation="horizontal"
+        android:background="?android:attr/selectableItemBackground">
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="110dp"
+        android:gravity="center"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true">
+        <!--图片按钮 用来设置拍摄图片-->
+
+        <!--图片控件进行预览-->
+
+        <ImageView
+            android:id="@+id/reset"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginRight="50dp"
+            android:src="@drawable/change" />
+
+        <ImageView
+            android:id="@+id/imageButton"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/takephoto" />
+
+        <ImageView
+            android:id="@+id/ok"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="50dp"
+            android:background="#952B2B2B" />
+    </LinearLayout>
+
+
+</RelativeLayout>

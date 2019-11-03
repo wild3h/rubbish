@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:id="@+id/search_layout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        style="@style/InputBoxStyle">
+        <EditText
+            android:id="@+id/textName"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="7"
+            style="@style/EditTextStyle"/>
+        <ImageView
+            android:id="@+id/searchButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/search"/>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/textlistlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/search_layout"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+        <TextView
+            android:text="O(∩_∩)O哈哈~"
+            style="@style/TextList"
+            />
+        <TextView
+            style="@style/TextList"
+            android:text="O(∩_∩)O哈哈~"
+            />
+    </LinearLayout>
+
+
+
+</RelativeLayout>
