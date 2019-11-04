@@ -14,6 +14,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -137,19 +138,36 @@ public class MainActivity extends Permission implements View.OnClickListener{
                                 textName.addTextChangedListener(new TextWatcher() {
                                     @Override
                                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                                        Log.e("第一个",s.toString());
                                     }
 
                                     @Override
                                     public void onTextChanged(CharSequence s, int start, int before, int count) {
-                                        sendGetRequest(s.toString());
+                                        Log.e("第二个",s.toString());
                                     }
 
                                     @Override
                                     public void afterTextChanged(Editable s) {
-
+                                        Log.e("第三个",s.toString());
                                     }
                                 });
+                            }
+                        });
+                        /**
+                         * 监听回车事件
+                         */
+                        textName.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                            @Override
+                            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                                //当actionId == XX_SEND 或者 XX_DONE时都触发
+                                //或者event.getKeyCode == ENTER 且 event.getAction == ACTION_DOWN时也触发
+                                //注意，这是一定要判断event != null。因为在某些输入法上会返回null。
+                                if ((event != null && KeyEvent.KEYCODE_ENTER == event.getKeyCode() && KeyEvent.ACTION_DOWN == event.getAction())) {
+                                    //search();
+                                    Log.e("TAG","回车了");
+                                    return true;
+                                }
+                                return false;
                             }
                         });
                         break;
