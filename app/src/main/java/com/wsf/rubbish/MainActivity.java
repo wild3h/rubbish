@@ -39,6 +39,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+/**
+ * 主页面
+ */
 public class MainActivity extends Permission implements View.OnClickListener{
 
     private ViewPager viewPager;

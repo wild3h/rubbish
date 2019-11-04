@@ -43,6 +43,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * 相机启动
+ */
 public class MyCameraActivity extends Permission implements View.OnClickListener,
             SurfaceHolder.Callback, Camera.PictureCallback {
         List<String> list= new ArrayList<>();
