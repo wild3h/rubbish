@@ -20,11 +20,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -39,6 +41,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 主页面
@@ -51,51 +54,22 @@ public class MainActivity extends Permission implements View.OnClickListener{
     private TextView musicLayout;
     private ImageView searchButton;
     private EditText textName;
-    private LinearLayout textListLayout;
+    private ListView listView;
     // 滚动条初始偏移量
     private int offset = 0;
     // 当前页编号
     private int currIndex = 0;
     //一倍滚动量
     private int one;
+//模糊搜索的数据数组
+    List<String> listdata;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.start);
+        datainit();
 
-        viewPager = (ViewPager) findViewById(R.id.viewPager);
-        //查找布局文件用LayoutInflater.inflate
-        LayoutInflater inflater =getLayoutInflater();
-        View view1 = inflater.inflate(R.layout.index, null);
-        View view2 = inflater.inflate(R.layout.my, null);
-
-        videoLayout = (TextView)findViewById(R.id.videoLayout);
-        musicLayout = (TextView)findViewById(R.id.musicLayout);
-
-
-        setBottomImage(videoLayout,R.mipmap.indeximg_pressed);
-        setBottomImage(musicLayout,R.mipmap.myimg);
-        videoLayout.setTextColor(Color.	argb(255,18,150,219));
-        musicLayout.setTextColor(Color.BLACK);
-
-        videoLayout.setOnClickListener(this);
-        musicLayout.setOnClickListener(this);
-
-        ImageButton opencamera=(ImageButton) findViewById(R.id.opencamera);
-        opencamera.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Intent intent =new Intent(MainActivity.this, MyCameraActivity.class);
-                startActivity(intent);
-            }
-        });
-        pageview =new ArrayList<View>();
-        //添加想要切换的界面
-        pageview.add(view1);
-        pageview.add(view2);
-
-        textListLayout=(LinearLayout)pageview.get(0).findViewById(R.id.textlistlayout);
         //数据适配器
         PagerAdapter mPagerAdapter = new PagerAdapter(){
 
@@ -130,29 +104,26 @@ public class MainActivity extends Permission implements View.OnClickListener{
                             }
                         });
                         textName=(EditText) pageview.get(0).findViewById(R.id.textName);
-                        textName.setOnClickListener(new View.OnClickListener() {
+                        textName.addTextChangedListener(new TextWatcher() {
                             @Override
-                            public void onClick(View v) {
-                                Log.e("TAG","点击文本框");
-                                textName = (EditText) findViewById(R.id.textName);
-                                textName.addTextChangedListener(new TextWatcher() {
-                                    @Override
-                                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                                        Log.e("第一个",s.toString());
-                                    }
+                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                                Log.e("第一个",s.toString());
+                            }
 
-                                    @Override
-                                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-                                        Log.e("第二个",s.toString());
-                                    }
+                            @Override
+                            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                Log.e("第二个",s.toString());
+                                listdata.clear();
+                                sendGetRequest(s.toString());
+                            }
 
-                                    @Override
-                                    public void afterTextChanged(Editable s) {
-                                        Log.e("第三个",s.toString());
-                                    }
-                                });
+                            @Override
+                            public void afterTextChanged(Editable s) {
+                                Log.e("第三个",s.toString());
                             }
                         });
+
+
                         /**
                          * 监听回车事件
                          */
@@ -261,20 +232,20 @@ public class MainActivity extends Permission implements View.OnClickListener{
         AsyncHttpClient client = new AsyncHttpClient();
         /*https://www.metalgearjoe.cn/mn/search?search=%E8%8B%B9%E6%9E%9C
         http://api.choviwu.top/garbage/getGarbage?garbageName=*/
-        String url = "https://www.metalgearjoe.cn/mn/search?search=%E8%8B%B9%E6%9E%9C"+name;
+        String url = "http://api.choviwu.top/garbage/getGarbage?garbageName="+name;
         client.get(url, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int i, org.apache.http.Header[] headers, byte[] bytes) {
                 Log.e("TAG",new String(bytes));
                 Boolean isdone=false;
-                Log.e("TAG","我日，竟然是"+String.valueOf(textListLayout==null));
                 try {
                     for(int j = 0; j<(new JSONObject(new String(bytes))).getJSONArray("data").length(); j++){
-                        RelativeLayout.LayoutParams layoutParams=new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        final TextView textView = new TextView(MainActivity.this);
-                        textView.setLayoutParams(layoutParams);
-                        textView.setText((new JSONObject(new String(bytes))).getJSONArray("data").getJSONObject(j).getString("gname"));
-                        textListLayout.addView(textView);
+//                        RelativeLayout.LayoutParams layoutParams=new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//                        final TextView textView = new TextView(MainActivity.this);
+//                        textView.setLayoutParams(layoutParams);
+                        listdata.add((new JSONObject(new String(bytes))).getJSONArray("data").getJSONObject(j).getString("gname"));
+                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MainActivity.this,R.layout.listitem,listdata);//listdata和str均可
+                        listView.setAdapter(arrayAdapter);
                     }
                     /*if(!isdone){
                         similar(bytes);//没找到完全相等的那个，然后展示一下相似的供选择
@@ -288,5 +259,39 @@ public class MainActivity extends Permission implements View.OnClickListener{
                 Log.e("TAG", new String(bytes));
             }
         });
+    }
+    private void datainit(){
+        listdata=new ArrayList<String>();
+        viewPager = (ViewPager) findViewById(R.id.viewPager);
+        //查找布局文件用LayoutInflater.inflate
+        LayoutInflater inflater =getLayoutInflater();
+        View view1 = inflater.inflate(R.layout.index, null);
+        View view2 = inflater.inflate(R.layout.my, null);
+
+        videoLayout = (TextView)findViewById(R.id.videoLayout);
+        musicLayout = (TextView)findViewById(R.id.musicLayout);
+
+        setBottomImage(videoLayout,R.mipmap.indeximg_pressed);
+        setBottomImage(musicLayout,R.mipmap.myimg);
+        videoLayout.setTextColor(Color.	argb(255,18,150,219));
+        musicLayout.setTextColor(Color.BLACK);
+
+        videoLayout.setOnClickListener(this);
+        musicLayout.setOnClickListener(this);
+
+        ImageButton opencamera=(ImageButton) findViewById(R.id.opencamera);
+        opencamera.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Intent intent =new Intent(MainActivity.this, MyCameraActivity.class);
+                startActivity(intent);
+            }
+        });
+        pageview =new ArrayList<View>();
+        //添加想要切换的界面
+        pageview.add(view1);
+        pageview.add(view2);
+
+        listView=(ListView) pageview.get(0).findViewById(R.id.listview);
     }
 }

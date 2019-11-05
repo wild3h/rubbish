@@ -26,18 +26,18 @@
     </LinearLayout>
     <LinearLayout
         android:id="@+id/textlistlayout"
+        android:paddingLeft="50dp"
+        android:paddingRight="50dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/search_layout"
         android:gravity="center_vertical"
         android:orientation="vertical">
-        <TextView
-            android:text="O(∩_∩)O哈哈~"
-            style="@style/TextList"
-            />
-        <TextView
-            style="@style/TextList"
-            android:text="O(∩_∩)O哈哈~"
+        <ListView
+            android:id="@+id/listview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shadowlist"
             />
     </LinearLayout>
 

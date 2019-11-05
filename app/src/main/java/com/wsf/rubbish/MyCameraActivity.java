@@ -396,7 +396,7 @@ public class MyCameraActivity extends Permission implements View.OnClickListener
                     LinearLayout.LayoutParams layoutParams=new LinearLayout.LayoutParams(0,ViewGroup.LayoutParams.MATCH_PARENT,list.get(i).length()+3);
                     layoutParams.setMargins(5,5,5,5);
                     final Button button = new Button(MyCameraActivity.this);
-                    Drawable drawable = ContextCompat.getDrawable(MyCameraActivity.this, R.drawable.btn_selector);
+                    Drawable drawable = ContextCompat.getDrawable(MyCameraActivity.this, R.drawable.shadow);
                     button.setBackground(drawable);
                     button.setText(list.get(i));
                     button.setTextColor(Color.WHITE);
