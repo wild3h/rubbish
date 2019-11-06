@@ -1,6 +1,5 @@
 package com.cgc.dao
 
-import com.cgc.pojo.Model
 import com.cgc.pojo.Type
 import com.cgc.pojo.TypeParser
 import com.cgc.util.SQLUtil
