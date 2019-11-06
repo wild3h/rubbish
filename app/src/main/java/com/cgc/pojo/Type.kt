@@ -2,7 +2,7 @@ package com.cgc.pojo
 
 import org.jetbrains.anko.db.RowParser
 
-class Type(var ITEM: String, var TYPE: String) {
+data class Type(var ITEM: String, var TYPE: String) {
 }
 
 object TypeParser : RowParser<Type> {

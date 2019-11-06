@@ -12,6 +12,7 @@ class ModelDao {
         values.put("NAME", model.name)
         values.put("TYPE", model.type)
         values.put("IMAGE_ID", model.imageId)
+        values.put("DATE", model.date)
         SQLUtil.insertData("model", values)
     }
 
