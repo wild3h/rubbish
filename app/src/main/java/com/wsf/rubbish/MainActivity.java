@@ -55,6 +55,7 @@ public class MainActivity extends Permission implements View.OnClickListener{
     private ImageView searchButton;
     private EditText textName;
     private ListView listView;
+    private TextView history;
     // 滚动条初始偏移量
     private int offset = 0;
     // 当前页编号
@@ -139,6 +140,15 @@ public class MainActivity extends Permission implements View.OnClickListener{
                                     return true;
                                 }
                                 return false;
+                            }
+                        });
+                        break;
+                    case 1:
+                        history.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent=new Intent(MainActivity.this,HistoryActivity.class);
+                                startActivity(intent);
                             }
                         });
                         break;
@@ -293,5 +303,6 @@ public class MainActivity extends Permission implements View.OnClickListener{
         pageview.add(view2);
 
         listView=(ListView) pageview.get(0).findViewById(R.id.listview);
+        history=(TextView) pageview.get(1).findViewById(R.id.history);
     }
 }
