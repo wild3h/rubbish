@@ -35,8 +35,8 @@ dependencies {
     implementation files( 'libs/android-async-http-1.4.8.jar')
     implementation 'androidx.collection:collection:1.1.0'
     implementation 'com.loopeer.library:cardstack:1.0.2'
-    implementation "androidx.core:core-ktx:+"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "androidx.core:core-ktx:1.1.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation group: 'io.requery', name: 'sqlite-android', version: '3.23.1'
     implementation "org.jetbrains.anko:anko:0.10.8"
 }
