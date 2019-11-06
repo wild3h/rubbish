@@ -23,6 +23,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".MyCameraActivity"></activity>
+        <activity android:name=".HistoryActivity"></activity>
     </application>
 
 </manifest>
