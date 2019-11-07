@@ -6,8 +6,9 @@ import android.view.View
 import android.widget.RelativeLayout
 import com.cgc.pojo.Model
 import com.wsf.rubbish.R
+import kotlinx.android.synthetic.main.history.view.*
 
-class historyItem: RelativeLayout {
+class HistoryItemView: RelativeLayout {
     constructor(context: Context?):super(context)
     constructor(context: Context?, attrs: AttributeSet?):super(context,attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr:Int):super(context,attrs,defStyleAttr)
@@ -23,11 +24,11 @@ class historyItem: RelativeLayout {
      * 刷新条目view数据
      */
     fun setData(data: Model) {
-//        //歌曲名称
-//        name.setText(data.name)
-//        //简介
-//        desc.setText(data.description)
-//        //获取图片
-//        Picasso.get().load(data.posterPic).into(bg)
+        //名称
+        name.text = data.name
+        //类别
+        type.text = data.type
     }
+
+
 }

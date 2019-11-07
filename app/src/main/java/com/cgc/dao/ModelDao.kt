@@ -19,4 +19,15 @@ class ModelDao {
     fun getHistory(): List<Model>? = SQLUtil.query("MODEL").parseList(ModelParser)
 
     fun selectByName(name: String): List<Model>? = SQLUtil.queryByCondition("MODEL", "NAME", name).parseList(ModelParser)
+
+    fun getHistoryCount(): Int {
+        val result = SQLUtil.queryCount("MODEL")
+        result?.moveToNext()
+        var count = 0
+        if (result != null) {
+            count = result.getInt(0)
+        }
+        result?.close()
+        return count
+    }
 }

@@ -3,6 +3,7 @@ package com.cgc.util
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.content.ContentValues
+import android.database.Cursor
 import org.jetbrains.anko.db.SelectQueryBuilder
 import org.jetbrains.anko.db.select
 
@@ -29,6 +30,10 @@ object SQLUtil {
                          condition: String,
                          name: String): SelectQueryBuilder {
         return db.select(type).whereSimple("$condition = ?", name)
+    }
+
+    fun queryCount(type: String): Cursor? {
+        return db.query(type, arrayOf("count(*)"), null, null, null, null, null)
     }
 }
 
