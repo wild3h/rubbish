@@ -2,26 +2,28 @@ package com.wsf.rubbish;
 
 
 import android.os.Bundle;
-import com.cgc.dao.ModelDao;
-import com.cgc.pojo.Model;
-import com.cgc.widget.HistoryItemView;
+
+import com.cgc.ui.fragment.HistoryFragment;
+import com.cgc.util.FragmentUtil;
 import com.wsf.permission.Permission;
-import java.util.ArrayList;
-import java.util.List;
+
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 
 public class HistoryActivity extends Permission {
 
-    ModelDao modelDao = new ModelDao();
-    List<Model> history = new ArrayList<Model>();
-    private HistoryItemView adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ModelDao modelDao = new ModelDao();
-        List<Model> history = modelDao.getHistory();
         setContentView(R.layout.history);
+//        ModelDao modelDao = new ModelDao();
+//        List<Model> history = modelDao.getHistory();
+        HistoryFragment h = new HistoryFragment();
 
+//        getFragmentManager().beginTransaction().replace(R.id.HistoryFragment, h).commit();
     }
 
 

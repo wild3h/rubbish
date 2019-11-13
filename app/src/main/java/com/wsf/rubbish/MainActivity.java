@@ -17,17 +17,13 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.viewpager.widget.PagerAdapter;
@@ -147,7 +143,7 @@ public class MainActivity extends Permission implements View.OnClickListener{
                         history.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Intent intent=new Intent(MainActivity.this,HistoryActivity.class);
+                                Intent intent=new Intent(MainActivity.this, HistoryActivity.class);
                                 startActivity(intent);
                             }
                         });

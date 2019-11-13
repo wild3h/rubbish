@@ -1,15 +1,16 @@
-package com.cgc.fragment
+package com.cgc.ui.fragment
 
 import android.graphics.Color
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.cgc.adapter.BaseFragment
 import com.cgc.adapter.HistoryAdapter
 import com.cgc.pojo.Model
 import com.cgc.presenter.HistoryPresenterImpl
 import com.cgc.view.HistoryView
 import com.wsf.rubbish.R
-import kotlinx.android.synthetic.main.history.*
+import kotlinx.android.synthetic.main.fragment_list.*
 
 class HistoryFragment: BaseFragment(),HistoryView {
     override fun onError(message: String?) {
@@ -66,7 +67,6 @@ class HistoryFragment: BaseFragment(),HistoryView {
     }
 
     override fun initData() {
-
         //初始化数据
         presenter.loadDatas()
     }

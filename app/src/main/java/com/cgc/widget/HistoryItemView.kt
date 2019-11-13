@@ -6,7 +6,7 @@ import android.view.View
 import android.widget.RelativeLayout
 import com.cgc.pojo.Model
 import com.wsf.rubbish.R
-import kotlinx.android.synthetic.main.history.view.*
+import kotlinx.android.synthetic.main.item_history.view.*
 
 class HistoryItemView: RelativeLayout {
     constructor(context: Context?):super(context)
@@ -17,7 +17,7 @@ class HistoryItemView: RelativeLayout {
      * 初始化方法
      */
     init {
-        View.inflate(context, R.layout.history,this)
+        View.inflate(context, R.layout.item_history,this)
     }
 
     /**
