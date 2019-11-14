@@ -1,4 +1,4 @@
-package com.cgc.adapter
+package com.cgc.base
 
 import android.os.Bundle
 import android.view.LayoutInflater

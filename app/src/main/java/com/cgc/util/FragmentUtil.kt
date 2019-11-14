@@ -1,6 +1,6 @@
 package com.cgc.util
 
-import com.cgc.adapter.BaseFragment
+import com.cgc.base.BaseFragment
 import com.cgc.ui.fragment.HistoryFragment
 
 

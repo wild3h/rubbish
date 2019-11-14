@@ -1,7 +1,7 @@
-package com.cgc.presenter
+package com.cgc.presenter.impl
 
 import com.cgc.dao.ModelDao
-import com.cgc.interf.HistoryPresenter
+import com.cgc.presenter.interf.HistoryPresenter
 import com.cgc.pojo.Model
 import com.cgc.view.HistoryView
 

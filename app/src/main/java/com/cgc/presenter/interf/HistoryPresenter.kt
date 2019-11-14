@@ -1,4 +1,4 @@
-package com.cgc.interf
+package com.cgc.presenter.interf
 
 interface HistoryPresenter {
     companion object{

@@ -36,10 +36,10 @@ class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.HistoryHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryHolder {
-        if (viewType == 1) {
-            return HistoryHolder(LoadMoreView(parent?.context))
+        return if (viewType == 1) {
+            HistoryHolder(LoadMoreView(parent.context))
         } else {
-            return HistoryHolder(HistoryItemView(parent?.context))
+            HistoryHolder(HistoryItemView(parent.context))
         }
     }
 
@@ -53,7 +53,7 @@ class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.HistoryHolder>() {
             return
         }
         //条目数据
-        val data = list.get(position)
+        val data = list[position]
         //条目view
         val itemView = holder.itemView as HistoryItemView
         //条目刷新
