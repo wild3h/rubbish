@@ -46,7 +46,6 @@ public class Permission extends Activity {
     }
 
     /**
-     *
      * @param permissions
      * @since 2.5.0
      * requestPermissions方法是请求某一权限，
@@ -82,14 +81,14 @@ public class Permission extends Activity {
     private List<String> findDeniedPermissions(String[] permissions) {
         List<String> needRequestPermissonList = new ArrayList<String>();
         if (Build.VERSION.SDK_INT >= 23
-                && getApplicationInfo().targetSdkVersion >= 23){
+                && getApplicationInfo().targetSdkVersion >= 23) {
             try {
                 for (String perm : permissions) {
                     Method checkSelfMethod = getClass().getMethod("checkSelfPermission", String.class);
                     Method shouldShowRequestPermissionRationaleMethod = getClass().getMethod("shouldShowRequestPermissionRationale",
                             String.class);
-                    if ((Integer)checkSelfMethod.invoke(this, perm) != PackageManager.PERMISSION_GRANTED
-                            || (Boolean)shouldShowRequestPermissionRationaleMethod.invoke(this, perm)) {
+                    if ((Integer) checkSelfMethod.invoke(this, perm) != PackageManager.PERMISSION_GRANTED
+                            || (Boolean) shouldShowRequestPermissionRationaleMethod.invoke(this, perm)) {
                         needRequestPermissonList.add(perm);
                     }
                 }
@@ -102,10 +101,10 @@ public class Permission extends Activity {
 
     /**
      * 检测是否所有的权限都已经授权
+     *
      * @param grantResults
      * @return
      * @since 2.5.0
-     *
      */
     private boolean verifyPermissions(int[] grantResults) {
         for (int result : grantResults) {
@@ -134,7 +133,6 @@ public class Permission extends Activity {
      * 显示提示信息
      *
      * @since 2.5.0
-     *
      */
     private void showMissingPermissionDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -164,10 +162,9 @@ public class Permission extends Activity {
     }
 
     /**
-     *  启动应用的设置
+     * 启动应用的设置
      *
      * @since 2.5.0
-     *
      */
     private void startAppSettings() {
         Intent intent = new Intent(
@@ -178,7 +175,7 @@ public class Permission extends Activity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(keyCode == KeyEvent.KEYCODE_BACK){
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
             this.finish();
             return true;
         }

@@ -38,6 +38,6 @@
             android:gravity="center_vertical"
             android:textSize="20dp"
             android:text="湿垃圾"/>
-    </LinearLayout><!--实际物品-->
+    </LinearLayout>
 
 </androidx.cardview.widget.CardView>

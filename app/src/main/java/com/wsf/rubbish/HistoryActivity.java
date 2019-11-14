@@ -21,9 +21,6 @@ public class HistoryActivity extends Permission {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.history);
-//        ModelDao modelDao = new ModelDao();
-//        List<Model> history = modelDao.getHistory();
-        HistoryFragment h = new HistoryFragment();
 
     }
 

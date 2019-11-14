@@ -1,8 +1,7 @@
 package com.cgc.ui.activity
 
 import com.cgc.base.BaseActivity
-import com.cgc.ui.fragment.YueDanFragment
-import com.cgc.util.DBHelper
+import com.cgc.ui.fragment.HistoryFragment
 import com.cgc.util.SQLUtil
 import com.wsf.rubbish.R
 
@@ -14,7 +13,7 @@ class HistoryActivity : BaseActivity() {
     override fun initData() {
         SQLUtil.initSQLData(this)
         val transaction = supportFragmentManager.beginTransaction()
-        val y = YueDanFragment()
+        val y = HistoryFragment()
         transaction.replace(R.id.HistoryFragment,y)
         transaction.commit()
     }

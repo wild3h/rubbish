@@ -4,17 +4,21 @@ import android.graphics.Color
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.cgc.base.BaseFragment
 import com.cgc.adapter.HistoryAdapter
+import com.cgc.base.BaseFragment
+import com.cgc.dao.ModelDao
 import com.cgc.pojo.Model
-import com.cgc.presenter.impl.HistoryPresenterImpl
+import com.cgc.presenter.impl.YueDanPresenterImpl
 import com.cgc.view.HistoryView
 import com.wsf.rubbish.R
 import kotlinx.android.synthetic.main.fragment_list.*
+import org.jetbrains.anko.support.v4.toast
 
-class HistoryFragment: BaseFragment(),HistoryView {
+/**
+ * Description:悦单界面
+ */
+class HistoryFragment : BaseFragment(), HistoryView {
     override fun onError(message: String?) {
-        myToast("加载数据失败")
     }
 
     override fun loadSuccess(list: List<Model>?) {
@@ -29,16 +33,14 @@ class HistoryFragment: BaseFragment(),HistoryView {
     }
 
     val adapter by lazy { HistoryAdapter() }
-    val presenter by lazy { HistoryPresenterImpl(this) }
+    val presenter by lazy { YueDanPresenterImpl(this) }
 
     override fun initView(): View? {
-        return View.inflate(context, R.layout.history, null)
+        return View.inflate(context, R.layout.fragment_list, null)
     }
 
     override fun initListener() {
-        //初始化recycleView
         recycleView.layoutManager = LinearLayoutManager(context)
-
         recycleView.adapter = adapter
 
         //初始化刷新控件
@@ -50,6 +52,13 @@ class HistoryFragment: BaseFragment(),HistoryView {
         //监听列表滑动
         recycleView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+
+                toast("charu")
+
+                val modelDao = ModelDao()
+                var model = Model("test","type","1","time")
+                modelDao.insert(model)
+
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     //最后一条已经显示
                     val layoutManager = recyclerView.layoutManager
@@ -67,8 +76,7 @@ class HistoryFragment: BaseFragment(),HistoryView {
     }
 
     override fun initData() {
-        //初始化数据
+        //加载数据
         presenter.loadDatas()
     }
-
 }

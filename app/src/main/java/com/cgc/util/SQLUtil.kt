@@ -11,12 +11,12 @@ import org.jetbrains.anko.db.select
 object SQLUtil {
     private lateinit var dbHelper: DBHelper
 
-    private lateinit var db: SQLiteDatabase
+    lateinit var db: SQLiteDatabase
     /**
      * 初始化数据
      */
     fun initSQLData(context: Context) {
-        dbHelper = DBHelper(context, "test_db", null, 1)
+        dbHelper = DBHelper(context, "temp.db", null, 1)
         db = dbHelper.writableDatabase
     }
 

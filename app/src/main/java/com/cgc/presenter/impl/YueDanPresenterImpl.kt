@@ -10,7 +10,7 @@ class YueDanPresenterImpl(var historyView: HistoryView): YueDanPresenter {
         val modelDao = ModelDao()
         val history: List<Model>? = modelDao.getHistory()
         if (history != null) {
-            historyView!!.loadMore(history)
+            historyView.loadMore(history)
         }
     }
 
@@ -18,7 +18,7 @@ class YueDanPresenterImpl(var historyView: HistoryView): YueDanPresenter {
         val modelDao = ModelDao()
         val history: List<Model>? = modelDao.getHistory()
         if (history != null) {
-            historyView!!.loadSuccess(history)
+            historyView.loadSuccess(history)
         }
     }
 }

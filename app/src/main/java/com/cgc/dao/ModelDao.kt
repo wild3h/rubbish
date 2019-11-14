@@ -13,7 +13,7 @@ class ModelDao {
         values.put("TYPE", model.type)
         values.put("IMAGE_ID", model.imageId)
         values.put("DATE", model.date)
-        SQLUtil.insertData("model", values)
+        SQLUtil.insertData("MODEL", values)
     }
 
     fun getHistory(): List<Model>? = SQLUtil.query("MODEL").parseList(ModelParser)
