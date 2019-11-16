@@ -19,7 +19,7 @@ class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.HistoryHolder>() {
     fun updateList(list: List<Model>?) {
         list?.let {
             this.list.clear()
-            this.list.addAll(list)
+            this.list.addAll(it)
             notifyDataSetChanged()
         }
     }
@@ -30,7 +30,7 @@ class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.HistoryHolder>() {
     fun loadMore(list: List<Model>?) {
         list?.let {
             this.list.clear()
-            this.list.addAll(list)
+            this.list.addAll(it)
             notifyDataSetChanged()
         }
     }
@@ -44,7 +44,7 @@ class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.HistoryHolder>() {
     }
 
     override fun getItemCount(): Int {
-        return list.size + 1
+        return list.size
     }
 
     override fun onBindViewHolder(holder: HistoryHolder, position: Int) {

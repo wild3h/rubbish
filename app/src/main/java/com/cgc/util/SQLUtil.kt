@@ -9,7 +9,7 @@ import org.jetbrains.anko.db.select
 
 
 object SQLUtil {
-    private lateinit var dbHelper: DBHelper
+    lateinit var dbHelper: DBHelper
 
     lateinit var db: SQLiteDatabase
     /**
@@ -20,20 +20,24 @@ object SQLUtil {
         db = dbHelper.writableDatabase
     }
 
-    fun insertData(type: String,values: ContentValues) {
-        db.insert(type, null, values)
+    fun insertData(table: String, values: ContentValues) {
+        db.insert(table, null, values)
     }
 
-    fun query(type: String): SelectQueryBuilder = db.select(type)
+    fun queryAll(table: String): SelectQueryBuilder = db.select(table)
 
-    fun queryByCondition(type: String,
+    fun queryByCondition(table: String,
                          condition: String,
                          name: String): SelectQueryBuilder {
-        return db.select(type).whereSimple("$condition = ?", name)
+        return db.select(table).whereSimple("$condition = ?", name)
     }
 
-    fun queryCount(type: String): Cursor? {
-        return db.query(type, arrayOf("count(*)"), null, null, null, null, null)
+    fun queryCount(table: String): Cursor? {
+        return db.query(table, arrayOf("count(*)"), null, null, null, null, null)
+    }
+
+    fun delete(table :String){
+        db.delete(table,null,null)
     }
 }
 

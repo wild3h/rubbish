@@ -16,7 +16,11 @@ class ModelDao {
         SQLUtil.insertData("MODEL", values)
     }
 
-    fun getHistory(): List<Model>? = SQLUtil.query("MODEL").parseList(ModelParser)
+    fun getHistory(): List<Model>? = SQLUtil.queryAll("MODEL").parseList(ModelParser)
+
+    fun deleteAllHistory(){
+        SQLUtil.delete("MODEL")
+    }
 
     fun selectByName(name: String): List<Model>? = SQLUtil.queryByCondition("MODEL", "NAME", name).parseList(ModelParser)
 

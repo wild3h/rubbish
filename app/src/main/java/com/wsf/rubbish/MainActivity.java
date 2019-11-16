@@ -29,7 +29,10 @@ import android.widget.TextView;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.cgc.dao.TypeDao;
+import com.cgc.pojo.Type;
 import com.cgc.ui.activity.HistoryActivity;
+import com.cgc.util.SQLUtil;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.wsf.permission.Permission;
@@ -62,11 +65,19 @@ public class MainActivity extends Permission implements View.OnClickListener{
 //模糊搜索的数据数组
     List<String> listdata;
 
+    private TypeDao typeDao = new TypeDao();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.start);
         datainit();
+        SQLUtil.INSTANCE.initSQLData(this);
+
+        List<Type> appleList = typeDao.selectByName("苹果");
+        if (appleList.isEmpty()){
+            typeDao.initType(this);
+        }
 
         //数据适配器
         PagerAdapter mPagerAdapter = new PagerAdapter(){
@@ -133,6 +144,15 @@ public class MainActivity extends Permission implements View.OnClickListener{
                                 //注意，这是一定要判断event != null。因为在某些输入法上会返回null。
                                 if ((event != null && KeyEvent.KEYCODE_ENTER == event.getKeyCode() && KeyEvent.ACTION_DOWN == event.getAction())) {
                                     //search();
+//                                    List<Type> types = typeDao.selectByName(textName.getText().toString());
+//                                    if (types.size()!=0){
+//                                        listdata.clear();
+//                                        for (int i = 0; i<types.size();i++){
+//                                            String str = "物品名:" + types.get(i).getITEM() +"类型:"+ types.get(i).getTYPE();
+//                                            listdata.add(str);
+//                                        }
+//                                    }
+//                                    listdata.add("aa");
                                     Log.e("TAG","回车了");
                                     return true;
                                 }
