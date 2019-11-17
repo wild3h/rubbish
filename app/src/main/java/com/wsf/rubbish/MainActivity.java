@@ -46,7 +46,7 @@ import java.util.List;
 /**
  * 主页面
  */
-public class MainActivity extends Permission implements View.OnClickListener{
+public class MainActivity extends Permission implements View.OnClickListener {
 
     private ViewPager viewPager;
     private ArrayList<View> pageview;
@@ -62,7 +62,7 @@ public class MainActivity extends Permission implements View.OnClickListener{
     private int currIndex = 0;
     //一倍滚动量
     private int one;
-//模糊搜索的数据数组
+    //模糊搜索的数据数组
     List<String> listdata;
 
     private TypeDao typeDao = new TypeDao();
@@ -75,12 +75,17 @@ public class MainActivity extends Permission implements View.OnClickListener{
         SQLUtil.INSTANCE.initSQLData(this);
 
         List<Type> appleList = typeDao.selectByName("苹果");
-        if (appleList.isEmpty()){
-            typeDao.initType(this);
+
+//        if (appleList.isEmpty()){
+//            typeDao.initType(this);
+//        }
+
+        if (appleList == null || appleList.isEmpty()) {
+            SQLUtil.INSTANCE.getDbHelper().copyDataBase();
         }
 
         //数据适配器
-        PagerAdapter mPagerAdapter = new PagerAdapter(){
+        PagerAdapter mPagerAdapter = new PagerAdapter() {
 
             @Override
             //获取当前窗体界面数
@@ -93,42 +98,43 @@ public class MainActivity extends Permission implements View.OnClickListener{
             //判断是否由对象生成界面
             public boolean isViewFromObject(View arg0, Object arg1) {
                 // TODO Auto-generated method stub
-                return arg0==arg1;
+                return arg0 == arg1;
             }
+
             //使从ViewGroup中移出当前View
             public void destroyItem(View arg0, int arg1, Object arg2) {
                 ((ViewPager) arg0).removeView(pageview.get(arg1));
             }
 
             //返回一个对象，这个对象表明了PagerAdapter适配器选择哪个对象放在当前的ViewPager中
-            public Object instantiateItem(View arg0, int arg1){
-                ((ViewPager)arg0).addView(pageview.get(arg1));
-                switch (arg1){
+            public Object instantiateItem(View arg0, int arg1) {
+                ((ViewPager) arg0).addView(pageview.get(arg1));
+                switch (arg1) {
                     case 0:
-                        searchButton=(ImageView) pageview.get(0).findViewById(R.id.searchButton);
+                        searchButton = (ImageView) pageview.get(0).findViewById(R.id.searchButton);
                         searchButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 //Log.e("TAG","点击查询");
                             }
                         });
-                        textName=(EditText) pageview.get(0).findViewById(R.id.textName);
+                        textName = (EditText) pageview.get(0).findViewById(R.id.textName);
                         textName.addTextChangedListener(new TextWatcher() {
                             @Override
                             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                                Log.e("第一个",s.toString());
+                                Log.e("第一个", s.toString());
                             }
 
                             @Override
                             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                                Log.e("第二个",s.toString());
+                                Log.e("第二个", s.toString());
                                 listdata.clear();
                                 sendGetRequest(s.toString());
                             }
 
                             @Override
                             public void afterTextChanged(Editable s) {
-                                Log.e("第三个",s.toString());
+                                Log.e("第三个", s.toString());
                             }
                         });
 
@@ -153,7 +159,7 @@ public class MainActivity extends Permission implements View.OnClickListener{
 //                                        }
 //                                    }
 //                                    listdata.add("aa");
-                                    Log.e("TAG","回车了");
+                                    Log.e("TAG", "回车了");
                                     return true;
                                 }
                                 return false;
@@ -164,7 +170,7 @@ public class MainActivity extends Permission implements View.OnClickListener{
                         history.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Intent intent=new Intent(MainActivity.this, HistoryActivity.class);
+                                Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
                                 startActivity(intent);
                             }
                         });
@@ -218,27 +224,28 @@ public class MainActivity extends Permission implements View.OnClickListener{
     }
 
     @Override
-    public void onClick(View view){
-        switch (view.getId()){
+    public void onClick(View view) {
+        switch (view.getId()) {
             case R.id.videoLayout:
                 //点击"视频“时切换到第一页
                 viewPager.setCurrentItem(0);
-                setBottomImage(videoLayout,R.mipmap.indeximg_pressed);
-                setBottomImage(musicLayout,R.mipmap.myimg);
-                videoLayout.setTextColor(Color.	argb(255,18,150,219));
+                setBottomImage(videoLayout, R.mipmap.indeximg_pressed);
+                setBottomImage(musicLayout, R.mipmap.myimg);
+                videoLayout.setTextColor(Color.argb(255, 18, 150, 219));
                 musicLayout.setTextColor(Color.BLACK);
                 break;
             case R.id.musicLayout:
                 //点击“音乐”时切换的第二页
                 viewPager.setCurrentItem(1);
-                setBottomImage(videoLayout,R.mipmap.indeximg);
-                setBottomImage(musicLayout,R.mipmap.myimg_pressed);
-                musicLayout.setTextColor(Color.	argb(255,18,150,219));
+                setBottomImage(videoLayout, R.mipmap.indeximg);
+                setBottomImage(musicLayout, R.mipmap.myimg_pressed);
+                musicLayout.setTextColor(Color.argb(255, 18, 150, 219));
                 videoLayout.setTextColor(Color.BLACK);
                 break;
         }
     }
-    private void setBottomImage(TextView textView,int imageId){
+
+    private void setBottomImage(TextView textView, int imageId) {
         Drawable drawable;
         Bitmap originalBitmap = BitmapFactory.decodeResource(getResources(),
                 imageId);
@@ -250,76 +257,79 @@ public class MainActivity extends Permission implements View.OnClickListener{
         matrix0.postScale(scale, scale);
         Bitmap changedBitmap = Bitmap.createBitmap(originalBitmap, 0, 0,
                 originalWidth, originalHeight, matrix0, true);
-        drawable=new BitmapDrawable(changedBitmap);
-        drawable.setBounds(0,0,0,0);
-        textView.setCompoundDrawablesWithIntrinsicBounds(null,drawable,null,null);
+        drawable = new BitmapDrawable(changedBitmap);
+        drawable.setBounds(0, 0, 0, 0);
+        textView.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
     }
-    private void sendGetRequest(final String name){
-        Log.e("TAG",name);
+
+    private void sendGetRequest(final String name) {
+        Log.e("TAG", name);
         AsyncHttpClient client = new AsyncHttpClient();
         /*https://www.metalgearjoe.cn/mn/search?search=%E8%8B%B9%E6%9E%9C
         http://api.choviwu.top/garbage/getGarbage?garbageName=*/
-        String url = "http://api.choviwu.top/garbage/getGarbage?garbageName="+name;
+        String url = "http://api.choviwu.top/garbage/getGarbage?garbageName=" + name;
         client.get(url, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int i, org.apache.http.Header[] headers, byte[] bytes) {
-                Log.e("TAG",new String(bytes));
-                Boolean isdone=false;
+                Log.e("TAG", new String(bytes));
+                Boolean isdone = false;
                 try {
-                    for(int j = 0; j<(new JSONObject(new String(bytes))).getJSONArray("data").length(); j++){
+                    for (int j = 0; j < (new JSONObject(new String(bytes))).getJSONArray("data").length(); j++) {
 //                        RelativeLayout.LayoutParams layoutParams=new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 //                        final TextView textView = new TextView(MainActivity.this);
 //                        textView.setLayoutParams(layoutParams);
                         listdata.add((new JSONObject(new String(bytes))).getJSONArray("data").getJSONObject(j).getString("gname"));
-                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MainActivity.this,R.layout.listitem,listdata);//listdata和str均可
+                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MainActivity.this, R.layout.listitem, listdata);//listdata和str均可
                         listView.setAdapter(arrayAdapter);
                     }
                     /*if(!isdone){
                         similar(bytes);//没找到完全相等的那个，然后展示一下相似的供选择
                     }*/
-                }catch (JSONException e){
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
+
             @Override
             public void onFailure(int i, org.apache.http.Header[] headers, byte[] bytes, Throwable throwable) {
                 Log.e("TAG", new String(bytes));
             }
         });
     }
-    private void datainit(){
-        listdata=new ArrayList<String>();
+
+    private void datainit() {
+        listdata = new ArrayList<String>();
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         //查找布局文件用LayoutInflater.inflate
-        LayoutInflater inflater =getLayoutInflater();
+        LayoutInflater inflater = getLayoutInflater();
         View view1 = inflater.inflate(R.layout.index, null);
         View view2 = inflater.inflate(R.layout.my, null);
 
-        videoLayout = (TextView)findViewById(R.id.videoLayout);
-        musicLayout = (TextView)findViewById(R.id.musicLayout);
+        videoLayout = (TextView) findViewById(R.id.videoLayout);
+        musicLayout = (TextView) findViewById(R.id.musicLayout);
 
-        setBottomImage(videoLayout,R.mipmap.indeximg_pressed);
-        setBottomImage(musicLayout,R.mipmap.myimg);
-        videoLayout.setTextColor(Color.	argb(255,18,150,219));
+        setBottomImage(videoLayout, R.mipmap.indeximg_pressed);
+        setBottomImage(musicLayout, R.mipmap.myimg);
+        videoLayout.setTextColor(Color.argb(255, 18, 150, 219));
         musicLayout.setTextColor(Color.BLACK);
 
         videoLayout.setOnClickListener(this);
         musicLayout.setOnClickListener(this);
 
-        ImageButton opencamera=(ImageButton) findViewById(R.id.opencamera);
-        opencamera.setOnClickListener(new View.OnClickListener(){
+        ImageButton opencamera = (ImageButton) findViewById(R.id.opencamera);
+        opencamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent =new Intent(MainActivity.this, MyCameraActivity.class);
+                Intent intent = new Intent(MainActivity.this, MyCameraActivity.class);
                 startActivity(intent);
             }
         });
-        pageview =new ArrayList<View>();
+        pageview = new ArrayList<View>();
         //添加想要切换的界面
         pageview.add(view1);
         pageview.add(view2);
 
-        listView=(ListView) pageview.get(0).findViewById(R.id.listview);
-        history=(TextView) pageview.get(1).findViewById(R.id.history);
+        listView = (ListView) pageview.get(0).findViewById(R.id.listview);
+        history = (TextView) pageview.get(1).findViewById(R.id.history);
     }
 }

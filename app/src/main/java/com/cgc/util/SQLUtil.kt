@@ -4,6 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.content.ContentValues
 import android.database.Cursor
+import com.cgc.dao.TypeDao
 import org.jetbrains.anko.db.SelectQueryBuilder
 import org.jetbrains.anko.db.select
 
@@ -18,6 +19,7 @@ object SQLUtil {
     fun initSQLData(context: Context) {
         dbHelper = DBHelper(context, "temp.db", null, 1)
         db = dbHelper.writableDatabase
+
     }
 
     fun insertData(table: String, values: ContentValues) {
