@@ -2,14 +2,24 @@ package com.wsf.rubbish;
 
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
@@ -25,7 +35,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -35,19 +48,32 @@ import com.cgc.ui.activity.HistoryActivity;
 import com.cgc.util.SQLUtil;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.soundcloud.android.crop.Crop;
+import com.soundcloud.android.crop.CropImageActivity;
+import com.wsf.Until.ACache;
+import com.wsf.Until.CompressImage;
 import com.wsf.permission.Permission;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static androidx.constraintlayout.widget.Constraints.TAG;
 
 /**
  * 主页面
  */
 public class MainActivity extends Permission implements View.OnClickListener{
-
+    private ACache acache;
+    private ACache mcache;
+    private Uri uritempFile;
+    private static final String IMAGE_FILE_LOCATION = "file:///" + Environment.getExternalStorageDirectory().getPath() + "/temp.jpg";
+    private Uri imageUri = Uri.parse(IMAGE_FILE_LOCATION);
     private ViewPager viewPager;
     private ArrayList<View> pageview;
     private TextView videoLayout;
@@ -56,6 +82,8 @@ public class MainActivity extends Permission implements View.OnClickListener{
     private EditText textName;
     private ListView listView;
     private TextView history;
+    private ImageView icon;
+    private TextView uploadtext;
     // 滚动条初始偏移量
     private int offset = 0;
     // 当前页编号
@@ -64,6 +92,9 @@ public class MainActivity extends Permission implements View.OnClickListener{
     private int one;
 //模糊搜索的数据数组
     List<String> listdata;
+    final private int IMAGE_REQUEST_CODE=256;
+    final private int CHOOSE_SMALL_PICTURE=111;
+    private String path;
 
     private TypeDao typeDao = new TypeDao();
 
@@ -72,6 +103,7 @@ public class MainActivity extends Permission implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.start);
         datainit();
+        aCacheInit();
         SQLUtil.INSTANCE.initSQLData(this);
 
         List<Type> appleList = typeDao.selectByName("苹果");
@@ -101,6 +133,10 @@ public class MainActivity extends Permission implements View.OnClickListener{
             }
 
             //返回一个对象，这个对象表明了PagerAdapter适配器选择哪个对象放在当前的ViewPager中
+
+            /**
+             * pageview内部设置监听事件并返回view
+             */
             public Object instantiateItem(View arg0, int arg1){
                 ((ViewPager)arg0).addView(pageview.get(arg1));
                 switch (arg1){
@@ -113,25 +149,24 @@ public class MainActivity extends Permission implements View.OnClickListener{
                             }
                         });
                         textName=(EditText) pageview.get(0).findViewById(R.id.textName);
-                        textName.addTextChangedListener(new TextWatcher() {
-                            @Override
-                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                                Log.e("第一个",s.toString());
-                            }
+                                textName.addTextChangedListener(new TextWatcher() {
+                                    @Override
+                                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                                        Log.e("第一个",s.toString());
+                                    }
 
-                            @Override
-                            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                                Log.e("第二个",s.toString());
-                                listdata.clear();
-                                sendGetRequest(s.toString());
-                            }
+                                    @Override
+                                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                        Log.e("第二个",s.toString());
+                                        listdata.clear();
+                                        sendGetRequest(s.toString());
+                                    }
 
-                            @Override
-                            public void afterTextChanged(Editable s) {
-                                Log.e("第三个",s.toString());
-                            }
-                        });
-
+                                    @Override
+                                    public void afterTextChanged(Editable s) {
+                                        Log.e("第三个",s.toString());
+                                    }
+                                });
 
                         /**
                          * 监听回车事件
@@ -166,6 +201,14 @@ public class MainActivity extends Permission implements View.OnClickListener{
                             public void onClick(View v) {
                                 Intent intent=new Intent(MainActivity.this, HistoryActivity.class);
                                 startActivity(intent);
+                            }
+                        });
+                        icon.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(Intent.ACTION_PICK,
+                                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                                startActivityForResult(intent,IMAGE_REQUEST_CODE);
                             }
                         });
                         break;
@@ -294,7 +337,6 @@ public class MainActivity extends Permission implements View.OnClickListener{
         LayoutInflater inflater =getLayoutInflater();
         View view1 = inflater.inflate(R.layout.index, null);
         View view2 = inflater.inflate(R.layout.my, null);
-
         videoLayout = (TextView)findViewById(R.id.videoLayout);
         musicLayout = (TextView)findViewById(R.id.musicLayout);
 
@@ -321,5 +363,88 @@ public class MainActivity extends Permission implements View.OnClickListener{
 
         listView=(ListView) pageview.get(0).findViewById(R.id.listview);
         history=(TextView) pageview.get(1).findViewById(R.id.history);
+        icon=(ImageView) pageview.get(1).findViewById(R.id.icon);
+        uploadtext=(TextView)  pageview.get(1).findViewById(R.id.uploadtext);
+
+        acache=ACache.get(MainActivity.this);
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+        //在相册里面选择好相片之后调回到现在的这个activity中
+        switch (requestCode) {
+            case IMAGE_REQUEST_CODE://这里的requestCode是我自己设置的，就是确定返回到那个Activity的标志
+                if (resultCode == RESULT_OK) {//resultcode是setResult里面设置的code值
+                    try {
+                        Uri selectedImage = data.getData(); //获取系统返回的照片的Uri
+                        String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                        Cursor cursor = getContentResolver().query(selectedImage,
+                                filePathColumn, null, null, null);//从系统表中查询指定Uri对应的照片
+                        cursor.moveToFirst();
+                        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                        path = cursor.getString(columnIndex);  //获取照片路径
+                        cursor.close();
+                        startPhotoZoom(selectedImage);
+                    } catch (Exception e) {
+                        // TODO Auto-generatedcatch block
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case Crop.REQUEST_CROP:
+                if(data!=null){
+                    Bitmap bitmap=null;
+                    try {
+                        bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(uritempFile));
+                        Log.e(TAG,"裁剪完毕");
+                        Log.e(TAG,"图像大小="+bitmap.getByteCount());
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    Bitmap iconbitmap=Bitmap.createScaledBitmap(bitmap,250,250,true);
+                    Log.e("TAG", "压缩完成");
+                    Log.e("TAG", iconbitmap.getByteCount()/1024+ "Kb");
+                    //TODO，将裁剪的bitmap显示在imageview控件上
+                    icon.setImageBitmap(iconbitmap);
+                    uploadtext.setText(null);
+                    acache.put("iconImage",iconbitmap);
+                    deleteSingleFile(Environment.getExternalStorageDirectory().getPath() + "/" + "small.jpg");
+                }
+
+                break;
+            default:
+                Log.e("TAG", "不是这一个活动");
+                break;
+        }
+    }
+
+    private void startPhotoZoom(Uri uri) {
+        uritempFile = Uri.parse("file://" + "/" + Environment.getExternalStorageDirectory().getPath() + "/" + "small.jpg");
+        Crop.of(uri, uritempFile).asSquare().start(this);
+    }
+    private boolean deleteSingleFile(String filePath$Name) {
+        File file = new File(filePath$Name);
+        // 如果文件路径所对应的文件存在，并且是一个文件，则直接删除
+        if (file.exists() && file.isFile()) {
+            if (file.delete()) {
+                Log.e("--Method--", "Copy_Delete.deleteSingleFile: 删除单个文件" + filePath$Name + "成功！");
+                return true;
+            } else {
+                Toast.makeText(getApplicationContext(), "删除单个文件" + filePath$Name + "失败！", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        } else {
+            Toast.makeText(getApplicationContext(), "删除单个文件失败：" + filePath$Name + "不存在！", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+    }
+    private void aCacheInit(){
+        mcache=ACache.get(MainActivity.this);
+        Bitmap acacheIcon=mcache.getAsBitmap("iconImage");
+        if(acacheIcon!=null){
+            icon.setImageBitmap(acacheIcon);
+            uploadtext.setText(null);
+        }
     }
 }

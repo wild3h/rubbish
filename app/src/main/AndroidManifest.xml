@@ -14,7 +14,7 @@
         android:label="拍图识垃圾"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme.Main">
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,6 +23,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".MyCameraActivity"></activity>
+        <activity android:name=".HistoryActivity"></activity>
+        <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
         <activity android:name="com.cgc.ui.activity.HistoryActivity"></activity>
     </application>
 
