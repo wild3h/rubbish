@@ -1,6 +1,7 @@
 package com.wsf.rubbish;
 
 
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -27,6 +28,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ArrayAdapter;
@@ -52,6 +54,7 @@ import com.soundcloud.android.crop.Crop;
 import com.soundcloud.android.crop.CropImageActivity;
 import com.wsf.Until.ACache;
 import com.wsf.Until.CompressImage;
+import com.wsf.Until.RomUtil;
 import com.wsf.permission.Permission;
 
 import org.json.JSONException;
@@ -60,10 +63,13 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
+import static com.wsf.Until.SetStatusBarLightMode.MIUISetStatusBarLightMode;
 
 /**
  * 主页面
@@ -104,6 +110,8 @@ public class MainActivity extends Permission implements View.OnClickListener{
         setContentView(R.layout.start);
         datainit();
         aCacheInit();
+        Log.e("ROM",RomUtil.getName()+" "+RomUtil.getVersion());
+
         SQLUtil.INSTANCE.initSQLData(this);
 
         List<Type> appleList = typeDao.selectByName("苹果");
@@ -230,6 +238,7 @@ public class MainActivity extends Permission implements View.OnClickListener{
         matrix.postTranslate(offset, 0);
     }
 
+
     public class MyOnPageChangeListener implements ViewPager.OnPageChangeListener {
 
         @Override
@@ -238,9 +247,19 @@ public class MainActivity extends Permission implements View.OnClickListener{
             switch (arg0) {
                 case 0:
                     animation = new TranslateAnimation(one, 0, 0, 0);
+                    setBottomImage(videoLayout,R.mipmap.indeximg_pressed);
+                    setBottomImage(musicLayout,R.mipmap.myimg);
+                    videoLayout.setTextColor(Color.	argb(255,18,150,219));
+                    musicLayout.setTextColor(Color.BLACK);
+                    MIUISetStatusBarLightMode(MainActivity.this,true);
                     break;
                 case 1:
                     animation = new TranslateAnimation(offset, one, 0, 0);
+                    setBottomImage(videoLayout,R.mipmap.indeximg);
+                    setBottomImage(musicLayout,R.mipmap.myimg_pressed);
+                    musicLayout.setTextColor(Color.	argb(255,18,150,219));
+                    videoLayout.setTextColor(Color.BLACK);
+                    MIUISetStatusBarLightMode(MainActivity.this,false);
                     break;
             }
             //arg0为切换到的页的编码
@@ -365,7 +384,7 @@ public class MainActivity extends Permission implements View.OnClickListener{
         history=(TextView) pageview.get(1).findViewById(R.id.history);
         icon=(ImageView) pageview.get(1).findViewById(R.id.icon);
         uploadtext=(TextView)  pageview.get(1).findViewById(R.id.uploadtext);
-
+        MIUISetStatusBarLightMode(MainActivity.this,true);
         acache=ACache.get(MainActivity.this);
     }
     @Override
@@ -447,4 +466,5 @@ public class MainActivity extends Permission implements View.OnClickListener{
             uploadtext.setText(null);
         }
     }
+
 }

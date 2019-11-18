@@ -3,8 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5"
-    android:fitsSystemWindows="true">
+    android:background="#F5F5F5">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -61,7 +60,7 @@
             android:id="@+id/history"
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:background="@drawable/bottom_line"
+            android:background="#FFFFFF"
             android:foreground="@drawable/waterwave"
             android:gravity="center_vertical"
             android:paddingLeft="20dp"
@@ -72,7 +71,7 @@
             android:id="@+id/diary"
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:background="@drawable/bottom_line"
+            android:background="#FFFFFF"
             android:foreground="@drawable/waterwave"
             android:gravity="center_vertical"
             android:paddingLeft="20dp"
@@ -84,7 +83,7 @@
             android:id="@+id/individuation"
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:background="@drawable/bottom_line"
+            android:background="#FFFFFF"
             android:foreground="@drawable/waterwave"
             android:gravity="center_vertical"
             android:paddingLeft="20dp"
