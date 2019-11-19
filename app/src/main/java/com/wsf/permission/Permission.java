@@ -16,6 +16,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
 public class Permission extends Activity {
     /**
      * 需要进行检测的权限数组
@@ -24,8 +26,11 @@ public class Permission extends Activity {
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.CAMERA,
-            Manifest.permission.INTERNET
-    };
+            Manifest.permission.INTERNET,
+            Manifest.permission.ACCESS_WIFI_STATE,
+            Manifest.permission.CHANGE_WIFI_STATE,
+            Manifest.permission.WAKE_LOCK,
+};
 
     private static final int PERMISSON_REQUESTCODE = 0;
 

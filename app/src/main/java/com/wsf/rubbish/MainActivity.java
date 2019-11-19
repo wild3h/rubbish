@@ -1,7 +1,10 @@
 package com.wsf.rubbish;
 
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -15,7 +18,10 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.net.Uri;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -36,6 +42,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -88,18 +95,26 @@ public class MainActivity extends Permission implements View.OnClickListener{
     private EditText textName;
     private ListView listView;
     private TextView history;
+    private TextView diary;
+    private TextView individuation;
     private ImageView icon;
     private TextView uploadtext;
+    RelativeLayout change_background;
+    RelativeLayout dialog_view;
+    ImageView backgroundImage;
     // 滚动条初始偏移量
     private int offset = 0;
     // 当前页编号
     private int currIndex = 0;
     //一倍滚动量
     private int one;
-//模糊搜索的数据数组
+    //模糊搜索的数据数组
     List<String> listdata;
     final private int IMAGE_REQUEST_CODE=256;
     final private int CHOOSE_SMALL_PICTURE=111;
+    final private int IMAGE_REQUEST_BACKGROUND=233;
+    final private int IMAGE_REQUEST_ICON=666;
+    private int request_code=-100;
     private String path;
 
     private TypeDao typeDao = new TypeDao();
@@ -111,7 +126,7 @@ public class MainActivity extends Permission implements View.OnClickListener{
         datainit();
         aCacheInit();
         Log.e("ROM",RomUtil.getName()+" "+RomUtil.getVersion());
-
+        Log.e("Mac",getMacAddress(this.getApplicationContext()));
         SQLUtil.INSTANCE.initSQLData(this);
 
         List<Type> appleList = typeDao.selectByName("苹果");
@@ -216,7 +231,47 @@ public class MainActivity extends Permission implements View.OnClickListener{
                             public void onClick(View v) {
                                 Intent intent = new Intent(Intent.ACTION_PICK,
                                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                                request_code=IMAGE_REQUEST_ICON;
                                 startActivityForResult(intent,IMAGE_REQUEST_CODE);
+                            }
+                        });
+                        diary.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent=new Intent(MainActivity.this, SquareActivity.class);
+                                startActivity(intent);
+                            }
+                        });
+                        individuation.setOnClickListener(new View.OnClickListener() {
+                            /**
+                             * 更换背景墙
+                             * @param view
+                             */
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent = new Intent(Intent.ACTION_PICK,
+                                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                                request_code=IMAGE_REQUEST_BACKGROUND;
+                                startActivityForResult(intent,IMAGE_REQUEST_CODE);
+                            }
+                        });
+                        change_background.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialog_view.setAlpha(0f);
+                                dialog_view.setVisibility(View.VISIBLE);
+                                dialog_view.animate().alpha(1f).setDuration(200).setListener(null);
+                            }
+                        });
+                        dialog_view.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialog_view.animate().alpha(0f).setDuration(200).setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        dialog_view.setVisibility(View.GONE);
+                                    }
+                                });
                             }
                         });
                         break;
@@ -349,6 +404,103 @@ public class MainActivity extends Permission implements View.OnClickListener{
             }
         });
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+        //在相册里面选择好相片之后调回到现在的这个activity中
+        switch (requestCode) {
+            case IMAGE_REQUEST_CODE://这里的requestCode是我自己设置的，就是确定返回到那个Activity的标志
+                if (resultCode == RESULT_OK) {//resultcode是setResult里面设置的code值
+                    try {
+                        Uri selectedImage = data.getData(); //获取系统返回的照片的Uri
+                        String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                        Cursor cursor = getContentResolver().query(selectedImage,
+                                filePathColumn, null, null, null);//从系统表中查询指定Uri对应的照片
+                        cursor.moveToFirst();
+                        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                        path = cursor.getString(columnIndex);  //获取照片路径
+                        cursor.close();
+                        startPhotoZoom(selectedImage);
+                    } catch (Exception e) {
+                        // TODO Auto-generatedcatch block
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case Crop.REQUEST_CROP:
+
+                if(data!=null){
+                    Bitmap bitmap=null;
+                    try {
+                        bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(uritempFile));
+                        Log.e(TAG,"裁剪完毕");
+                        Log.e(TAG,"图像大小="+bitmap.getByteCount());
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
+                    if(request_code==IMAGE_REQUEST_BACKGROUND) {
+                        Bitmap iconbitmap=Bitmap.createScaledBitmap(bitmap,1000,1000,true);
+                        backgroundImage.setImageBitmap(iconbitmap);
+                        acache.put("backgroundImage",iconbitmap);
+                        deleteSingleFile(Environment.getExternalStorageDirectory().getPath() + "/" + "small.jpg");
+                    }else if(request_code==IMAGE_REQUEST_ICON){
+                        Bitmap iconbitmap=Bitmap.createScaledBitmap(bitmap,250,250,true);
+                        icon.setImageBitmap(iconbitmap);
+                        uploadtext.setText(null);
+                        acache.put("iconImage",iconbitmap);
+                        deleteSingleFile(Environment.getExternalStorageDirectory().getPath() + "/" + "small.jpg");
+                    }
+                    request_code=-100;
+                }
+                break;
+            default:
+                Log.e("TAG", "不是这一个活动");
+                break;
+        }
+    }
+
+    private void startPhotoZoom(Uri uri) {
+        uritempFile = Uri.parse("file://" + "/" + Environment.getExternalStorageDirectory().getPath() + "/" + "small.jpg");
+        Crop.of(uri, uritempFile).asSquare().start(this);
+    }
+    private boolean deleteSingleFile(String filePath$Name) {
+        File file = new File(filePath$Name);
+        // 如果文件路径所对应的文件存在，并且是一个文件，则直接删除
+        if (file.exists() && file.isFile()) {
+            if (file.delete()) {
+                Log.e("--Method--", "Copy_Delete.deleteSingleFile: 删除单个文件" + filePath$Name + "成功！");
+                return true;
+            } else {
+                Toast.makeText(getApplicationContext(), "删除单个文件" + filePath$Name + "失败！", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        } else {
+            Toast.makeText(getApplicationContext(), "删除单个文件失败：" + filePath$Name + "不存在！", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+    }
+
+    public  String getMacAddress(Context context) {
+
+        String macAddress = null ;
+        WifiManager wifiManager;
+        wifiManager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
+        WifiInfo info = ( null == wifiManager ? null : wifiManager.getConnectionInfo());
+
+        if (!wifiManager.isWifiEnabled())
+        {
+            //必须先打开，才能获取到MAC地址
+            wifiManager.setWifiEnabled( true );
+            wifiManager.setWifiEnabled( false );
+        }
+        if ( null != info) {
+            macAddress = info.getMacAddress();
+        }
+        return macAddress;
+    }
     private void datainit(){
         listdata=new ArrayList<String>();
         viewPager = (ViewPager) findViewById(R.id.viewPager);
@@ -382,89 +534,26 @@ public class MainActivity extends Permission implements View.OnClickListener{
 
         listView=(ListView) pageview.get(0).findViewById(R.id.listview);
         history=(TextView) pageview.get(1).findViewById(R.id.history);
+        diary=(TextView) pageview.get(1).findViewById(R.id.diary);
+        individuation=(TextView) pageview.get(1).findViewById(R.id.individuation);
         icon=(ImageView) pageview.get(1).findViewById(R.id.icon);
         uploadtext=(TextView)  pageview.get(1).findViewById(R.id.uploadtext);
         MIUISetStatusBarLightMode(MainActivity.this,true);
         acache=ACache.get(MainActivity.this);
-    }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        super.onActivityResult(requestCode, resultCode, data);
-        //在相册里面选择好相片之后调回到现在的这个activity中
-        switch (requestCode) {
-            case IMAGE_REQUEST_CODE://这里的requestCode是我自己设置的，就是确定返回到那个Activity的标志
-                if (resultCode == RESULT_OK) {//resultcode是setResult里面设置的code值
-                    try {
-                        Uri selectedImage = data.getData(); //获取系统返回的照片的Uri
-                        String[] filePathColumn = {MediaStore.Images.Media.DATA};
-                        Cursor cursor = getContentResolver().query(selectedImage,
-                                filePathColumn, null, null, null);//从系统表中查询指定Uri对应的照片
-                        cursor.moveToFirst();
-                        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                        path = cursor.getString(columnIndex);  //获取照片路径
-                        cursor.close();
-                        startPhotoZoom(selectedImage);
-                    } catch (Exception e) {
-                        // TODO Auto-generatedcatch block
-                        e.printStackTrace();
-                    }
-                }
-                break;
-            case Crop.REQUEST_CROP:
-                if(data!=null){
-                    Bitmap bitmap=null;
-                    try {
-                        bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(uritempFile));
-                        Log.e(TAG,"裁剪完毕");
-                        Log.e(TAG,"图像大小="+bitmap.getByteCount());
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                    Bitmap iconbitmap=Bitmap.createScaledBitmap(bitmap,250,250,true);
-                    Log.e("TAG", "压缩完成");
-                    Log.e("TAG", iconbitmap.getByteCount()/1024+ "Kb");
-                    //TODO，将裁剪的bitmap显示在imageview控件上
-                    icon.setImageBitmap(iconbitmap);
-                    uploadtext.setText(null);
-                    acache.put("iconImage",iconbitmap);
-                    deleteSingleFile(Environment.getExternalStorageDirectory().getPath() + "/" + "small.jpg");
-                }
-
-                break;
-            default:
-                Log.e("TAG", "不是这一个活动");
-                break;
-        }
-    }
-
-    private void startPhotoZoom(Uri uri) {
-        uritempFile = Uri.parse("file://" + "/" + Environment.getExternalStorageDirectory().getPath() + "/" + "small.jpg");
-        Crop.of(uri, uritempFile).asSquare().start(this);
-    }
-    private boolean deleteSingleFile(String filePath$Name) {
-        File file = new File(filePath$Name);
-        // 如果文件路径所对应的文件存在，并且是一个文件，则直接删除
-        if (file.exists() && file.isFile()) {
-            if (file.delete()) {
-                Log.e("--Method--", "Copy_Delete.deleteSingleFile: 删除单个文件" + filePath$Name + "成功！");
-                return true;
-            } else {
-                Toast.makeText(getApplicationContext(), "删除单个文件" + filePath$Name + "失败！", Toast.LENGTH_SHORT).show();
-                return false;
-            }
-        } else {
-            Toast.makeText(getApplicationContext(), "删除单个文件失败：" + filePath$Name + "不存在！", Toast.LENGTH_SHORT).show();
-            return false;
-        }
+        change_background=(RelativeLayout) pageview.get(1).findViewById(R.id.change_background);
+        dialog_view=(RelativeLayout)pageview.get(1).findViewById(R.id.dialog_view);
+        backgroundImage=(ImageView)pageview.get(1).findViewById(R.id.backgroundImage);
     }
     private void aCacheInit(){
         mcache=ACache.get(MainActivity.this);
         Bitmap acacheIcon=mcache.getAsBitmap("iconImage");
+        Bitmap acacheBackground=mcache.getAsBitmap("backgroundImage");
         if(acacheIcon!=null){
             icon.setImageBitmap(acacheIcon);
             uploadtext.setText(null);
         }
+        if(acacheBackground!=null){
+            backgroundImage.setImageBitmap(acacheBackground);
+        }
     }
-
 }
