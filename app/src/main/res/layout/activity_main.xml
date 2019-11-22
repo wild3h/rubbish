@@ -48,20 +48,23 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginRight="50dp"
-            android:src="@drawable/change" />
+            android:src="@drawable/change"
+            android:foreground="@drawable/waterwave"/>
 
         <ImageView
             android:id="@+id/imageButton"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:src="@drawable/takephoto" />
+            android:src="@drawable/takephoto"
+            android:foreground="@drawable/waterwave"/>
 
         <ImageView
             android:id="@+id/ok"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginLeft="50dp"
-            android:background="#952B2B2B" />
+            android:background="#952B2B2B"
+            android:foreground="@drawable/waterwave"/>
     </LinearLayout>
 
 
