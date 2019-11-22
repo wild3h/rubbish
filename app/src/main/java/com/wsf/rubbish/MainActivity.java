@@ -26,6 +26,8 @@ import android.os.Build;
 import android.os.Bundle;
 
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -37,12 +39,15 @@ import android.view.View;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -72,8 +77,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Timer;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 import static com.wsf.Until.SetStatusBarLightMode.MIUISetStatusBarLightMode;
@@ -81,7 +91,7 @@ import static com.wsf.Until.SetStatusBarLightMode.MIUISetStatusBarLightMode;
 /**
  * 主页面
  */
-public class MainActivity extends Permission implements View.OnClickListener{
+public class MainActivity extends Permission implements View.OnClickListener, AdapterView.OnItemClickListener {
     private ACache acache;
     private ACache mcache;
     private Uri uritempFile;
@@ -101,6 +111,7 @@ public class MainActivity extends Permission implements View.OnClickListener{
     private TextView uploadtext;
     RelativeLayout change_background;
     RelativeLayout dialog_view;
+    ListView detail;
     ImageView backgroundImage;
     // 滚动条初始偏移量
     private int offset = 0;
@@ -127,12 +138,15 @@ public class MainActivity extends Permission implements View.OnClickListener{
         aCacheInit();
         Log.e("ROM",RomUtil.getName()+" "+RomUtil.getVersion());
         Log.e("Mac",getMacAddress(this.getApplicationContext()));
-        SQLUtil.INSTANCE.initSQLData(this);
-
-        List<Type> appleList = typeDao.selectByName("苹果");
-        if (appleList.isEmpty()){
-            typeDao.initType(this);
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                List<Type> appleList = typeDao.selectByName("苹果");
+                if (appleList.isEmpty()){
+                    typeDao.initType(MainActivity.this);
+                }
+            }
+        }).start();
 
         //数据适配器
         PagerAdapter mPagerAdapter = new PagerAdapter(){
@@ -181,13 +195,24 @@ public class MainActivity extends Permission implements View.OnClickListener{
                                     @Override
                                     public void onTextChanged(CharSequence s, int start, int before, int count) {
                                         Log.e("第二个",s.toString());
-                                        listdata.clear();
-                                        sendGetRequest(s.toString());
+                                        if("".equals(textName.getText().toString())){
+                                            Log.e("TAG","yes");
+                                            listdata.clear();
+                                            Adapter adapter=(ArrayAdapter)listView.getAdapter();
+                                            listView.setAdapter(new ArrayAdapter<String>(MainActivity.this,R.layout.listitem,new ArrayList<String>()));
+                                        }else {
+                                            listdata.clear();
+                                            sendGetRequest(s.toString());
+                                        }
                                     }
 
                                     @Override
-                                    public void afterTextChanged(Editable s) {
+                                    public synchronized void afterTextChanged(Editable s) {
                                         Log.e("第三个",s.toString());
+                                        if("".equals(textName.getText().toString())){
+                                            listdata.clear();
+                                        }
+
                                     }
                                 });
 
@@ -293,6 +318,30 @@ public class MainActivity extends Permission implements View.OnClickListener{
         matrix.postTranslate(offset, 0);
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        if (listView.equals(adapterView)) {
+            Log.e("TAG",listdata.get(i).toString());
+            int ImageID=0;
+            ImageID=R.mipmap.shi;
+            //操作生成卡片
+            List<Map<String,Object>> listitem=new ArrayList<Map<String,Object>>();
+            Map<String,Object> showitem=new HashMap<String,Object>();
+            showitem.put("name",listdata.get(i).toString());
+            showitem.put("type_image",ImageID);
+            listitem.add(showitem);
+            //创建SimpleAdapter
+            SimpleAdapter simpleAdapter=new SimpleAdapter(getApplicationContext(),listitem,R.layout.item_detail,new String[]{"name","type_image"},new int[]{R.id.name,R.id.type_image});
+            detail.setAlpha(0f);
+            detail.setVisibility(View.GONE);
+            detail.setAdapter(simpleAdapter);
+            detail.setVisibility(View.VISIBLE);
+            detail.animate().alpha(1f).setDuration(200).setListener(null);
+            //清空listview
+            listView.setAdapter(new ArrayAdapter<String>(MainActivity.this,R.layout.listitem,new ArrayList<String>()));
+        }
+    }
+
 
     public class MyOnPageChangeListener implements ViewPager.OnPageChangeListener {
 
@@ -390,6 +439,7 @@ public class MainActivity extends Permission implements View.OnClickListener{
                         listdata.add((new JSONObject(new String(bytes))).getJSONArray("data").getJSONObject(j).getString("gname"));
                         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MainActivity.this,R.layout.listitem,listdata);//listdata和str均可
                         listView.setAdapter(arrayAdapter);
+                        listView.setOnItemClickListener(MainActivity.this);
                     }
                     /*if(!isdone){
                         similar(bytes);//没找到完全相等的那个，然后展示一下相似的供选择
@@ -462,6 +512,39 @@ public class MainActivity extends Permission implements View.OnClickListener{
         }
     }
 
+    //定义是否退出程序的标记
+    private boolean isExit = false;
+    //定义接受用户发送信息的handler
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            //标记用户不退出状态
+            isExit = false;
+        }
+    };
+
+    //监听手机的物理按键点击事件
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        //判断用户是否点击的是返回键
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            //如果isExit标记为false，提示用户再次按键
+            if (!isExit) {
+                isExit = true;
+                Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                //如果用户没有在2秒内再次按返回键的话，就发送消息标记用户为不退出状态
+                mHandler.sendEmptyMessageDelayed(0, 3000);
+            }
+            //如果isExit标记为true，退出程序
+            else {
+                //退出程序
+                finish();
+            }
+        }
+        return false;
+    }
+
     private void startPhotoZoom(Uri uri) {
         uritempFile = Uri.parse("file://" + "/" + Environment.getExternalStorageDirectory().getPath() + "/" + "small.jpg");
         Crop.of(uri, uritempFile).asSquare().start(this);
@@ -482,7 +565,6 @@ public class MainActivity extends Permission implements View.OnClickListener{
             return false;
         }
     }
-
     public  String getMacAddress(Context context) {
 
         String macAddress = null ;
@@ -501,6 +583,7 @@ public class MainActivity extends Permission implements View.OnClickListener{
         }
         return macAddress;
     }
+
     private void datainit(){
         listdata=new ArrayList<String>();
         viewPager = (ViewPager) findViewById(R.id.viewPager);
@@ -543,6 +626,7 @@ public class MainActivity extends Permission implements View.OnClickListener{
         change_background=(RelativeLayout) pageview.get(1).findViewById(R.id.change_background);
         dialog_view=(RelativeLayout)pageview.get(1).findViewById(R.id.dialog_view);
         backgroundImage=(ImageView)pageview.get(1).findViewById(R.id.backgroundImage);
+        detail=pageview.get(0).findViewById(R.id.detail);
     }
     private void aCacheInit(){
         mcache=ACache.get(MainActivity.this);

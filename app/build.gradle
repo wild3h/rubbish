@@ -43,6 +43,7 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.sefford:circular-progress-drawable:1.31@aar'
 }
 repositories {
     mavenCentral()

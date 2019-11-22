@@ -8,4 +8,8 @@
     <color name="bottom_color">#ff33b5e5</color>
     <color name="bottom_bg">#40BAF8</color>
     <color name="bordercolor">#FFFFFF</color>
+    <color name="red">#FFC93437</color>
+    <color name="blue">#FF375BF1</color>
+    <color name="yellow">#FFF7D23E</color>
+    <color name="green">#FF34A350</color>
 </resources>

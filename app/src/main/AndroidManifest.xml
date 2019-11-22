@@ -20,16 +20,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Main">
         <activity android:name=".MainActivity">
+
+        </activity>
+        <activity android:name=".MyCameraActivity"></activity>
+        <activity android:name=".HistoryActivity"></activity>
+        <activity android:name=".SquareActivity"></activity>
+        <activity android:name=".LoadingActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MyCameraActivity"></activity>
-        <activity android:name=".HistoryActivity"></activity>
-        <activity android:name=".SquareActivity"></activity>
-        <activity android:name=".IndividuationActivity"></activity>
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
         <activity android:name="com.cgc.ui.activity.HistoryActivity"></activity>
     </application>
