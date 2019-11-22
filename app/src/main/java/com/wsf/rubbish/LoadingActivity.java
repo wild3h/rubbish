@@ -26,8 +26,9 @@ public class LoadingActivity extends Permission{
                 SQLUtil.INSTANCE.initSQLData(LoadingActivity.this);
 
                 List<Type> appleList = typeDao.selectByName("苹果");
-                if (appleList.isEmpty()){
-                    typeDao.initType(LoadingActivity.this);
+                if (appleList == null || appleList.isEmpty()) {
+                    SQLUtil.dbHelper.copyDataBase();
+                    //typeDao.initType(MainActivity.this);
                 }
                 Intent intent=new Intent(LoadingActivity.this,MainActivity.class);
                 startActivity(intent);

@@ -121,11 +121,11 @@ public class MainActivity extends Permission implements View.OnClickListener, Ad
     private int one;
     //模糊搜索的数据数组
     List<String> listdata;
-    final private int IMAGE_REQUEST_CODE=256;
-    final private int CHOOSE_SMALL_PICTURE=111;
-    final private int IMAGE_REQUEST_BACKGROUND=233;
-    final private int IMAGE_REQUEST_ICON=666;
-    private int request_code=-100;
+    final private int IMAGE_REQUEST_CODE = 256;
+    final private int CHOOSE_SMALL_PICTURE = 111;
+    final private int IMAGE_REQUEST_BACKGROUND = 233;
+    final private int IMAGE_REQUEST_ICON = 666;
+    private int request_code = -100;
     private String path;
 
     private TypeDao typeDao = new TypeDao();
@@ -136,20 +136,21 @@ public class MainActivity extends Permission implements View.OnClickListener, Ad
         setContentView(R.layout.start);
         datainit();
         aCacheInit();
-        Log.e("ROM",RomUtil.getName()+" "+RomUtil.getVersion());
-        Log.e("Mac",getMacAddress(this.getApplicationContext()));
+        Log.e("ROM", RomUtil.getName() + " " + RomUtil.getVersion());
+        Log.e("Mac", getMacAddress(this.getApplicationContext()));
         new Thread(new Runnable() {
             @Override
             public void run() {
                 List<Type> appleList = typeDao.selectByName("苹果");
-                if (appleList.isEmpty()){
-                    typeDao.initType(MainActivity.this);
+                if (appleList == null || appleList.isEmpty()) {
+                    SQLUtil.dbHelper.copyDataBase();
+                    //typeDao.initType(MainActivity.this);
                 }
             }
         }).start();
 
         //数据适配器
-        PagerAdapter mPagerAdapter = new PagerAdapter(){
+        PagerAdapter mPagerAdapter = new PagerAdapter() {
 
             @Override
             //获取当前窗体界面数
@@ -162,8 +163,9 @@ public class MainActivity extends Permission implements View.OnClickListener, Ad
             //判断是否由对象生成界面
             public boolean isViewFromObject(View arg0, Object arg1) {
                 // TODO Auto-generated method stub
-                return arg0==arg1;
+                return arg0 == arg1;
             }
+
             //使从ViewGroup中移出当前View
             public void destroyItem(View arg0, int arg1, Object arg2) {
                 ((ViewPager) arg0).removeView(pageview.get(arg1));
@@ -174,47 +176,47 @@ public class MainActivity extends Permission implements View.OnClickListener, Ad
             /**
              * pageview内部设置监听事件并返回view
              */
-            public Object instantiateItem(View arg0, int arg1){
-                ((ViewPager)arg0).addView(pageview.get(arg1));
-                switch (arg1){
+            public Object instantiateItem(View arg0, int arg1) {
+                ((ViewPager) arg0).addView(pageview.get(arg1));
+                switch (arg1) {
                     case 0:
-                        searchButton=(ImageView) pageview.get(0).findViewById(R.id.searchButton);
+                        searchButton = (ImageView) pageview.get(0).findViewById(R.id.searchButton);
                         searchButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 //Log.e("TAG","点击查询");
                             }
                         });
-                        textName=(EditText) pageview.get(0).findViewById(R.id.textName);
-                                textName.addTextChangedListener(new TextWatcher() {
-                                    @Override
-                                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                                        Log.e("第一个",s.toString());
-                                    }
+                        textName = (EditText) pageview.get(0).findViewById(R.id.textName);
+                        textName.addTextChangedListener(new TextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                                Log.e("第一个", s.toString());
+                            }
 
-                                    @Override
-                                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-                                        Log.e("第二个",s.toString());
-                                        if("".equals(textName.getText().toString())){
-                                            Log.e("TAG","yes");
-                                            listdata.clear();
-                                            Adapter adapter=(ArrayAdapter)listView.getAdapter();
-                                            listView.setAdapter(new ArrayAdapter<String>(MainActivity.this,R.layout.listitem,new ArrayList<String>()));
-                                        }else {
-                                            listdata.clear();
-                                            sendGetRequest(s.toString());
-                                        }
-                                    }
+                            @Override
+                            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                Log.e("第二个", s.toString());
+                                if ("".equals(textName.getText().toString())) {
+                                    Log.e("TAG", "yes");
+                                    listdata.clear();
+                                    Adapter adapter = (ArrayAdapter) listView.getAdapter();
+                                    listView.setAdapter(new ArrayAdapter<String>(MainActivity.this, R.layout.listitem, new ArrayList<String>()));
+                                } else {
+                                    listdata.clear();
+                                    sendGetRequest(s.toString());
+                                }
+                            }
 
-                                    @Override
-                                    public synchronized void afterTextChanged(Editable s) {
-                                        Log.e("第三个",s.toString());
-                                        if("".equals(textName.getText().toString())){
-                                            listdata.clear();
-                                        }
+                            @Override
+                            public synchronized void afterTextChanged(Editable s) {
+                                Log.e("第三个", s.toString());
+                                if ("".equals(textName.getText().toString())) {
+                                    listdata.clear();
+                                }
 
-                                    }
-                                });
+                            }
+                        });
 
                         /**
                          * 监听回车事件
@@ -236,7 +238,7 @@ public class MainActivity extends Permission implements View.OnClickListener, Ad
 //                                        }
 //                                    }
 //                                    listdata.add("aa");
-                                    Log.e("TAG","回车了");
+                                    Log.e("TAG", "回车了");
                                     return true;
                                 }
                                 return false;
@@ -247,7 +249,7 @@ public class MainActivity extends Permission implements View.OnClickListener, Ad
                         history.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Intent intent=new Intent(MainActivity.this, HistoryActivity.class);
+                                Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
                                 startActivity(intent);
                             }
                         });
@@ -256,14 +258,14 @@ public class MainActivity extends Permission implements View.OnClickListener, Ad
                             public void onClick(View v) {
                                 Intent intent = new Intent(Intent.ACTION_PICK,
                                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                                request_code=IMAGE_REQUEST_ICON;
-                                startActivityForResult(intent,IMAGE_REQUEST_CODE);
+                                request_code = IMAGE_REQUEST_ICON;
+                                startActivityForResult(intent, IMAGE_REQUEST_CODE);
                             }
                         });
                         diary.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Intent intent=new Intent(MainActivity.this, SquareActivity.class);
+                                Intent intent = new Intent(MainActivity.this, SquareActivity.class);
                                 startActivity(intent);
                             }
                         });
@@ -276,8 +278,8 @@ public class MainActivity extends Permission implements View.OnClickListener, Ad
                             public void onClick(View view) {
                                 Intent intent = new Intent(Intent.ACTION_PICK,
                                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                                request_code=IMAGE_REQUEST_BACKGROUND;
-                                startActivityForResult(intent,IMAGE_REQUEST_CODE);
+                                request_code = IMAGE_REQUEST_BACKGROUND;
+                                startActivityForResult(intent, IMAGE_REQUEST_CODE);
                             }
                         });
                         change_background.setOnClickListener(new View.OnClickListener() {
@@ -321,24 +323,24 @@ public class MainActivity extends Permission implements View.OnClickListener, Ad
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         if (listView.equals(adapterView)) {
-            Log.e("TAG",listdata.get(i).toString());
-            int ImageID=0;
-            ImageID=R.mipmap.shi;
+            Log.e("TAG", listdata.get(i).toString());
+            int ImageID = 0;
+            ImageID = R.mipmap.shi;
             //操作生成卡片
-            List<Map<String,Object>> listitem=new ArrayList<Map<String,Object>>();
-            Map<String,Object> showitem=new HashMap<String,Object>();
-            showitem.put("name",listdata.get(i).toString());
-            showitem.put("type_image",ImageID);
+            List<Map<String, Object>> listitem = new ArrayList<Map<String, Object>>();
+            Map<String, Object> showitem = new HashMap<String, Object>();
+            showitem.put("name", listdata.get(i).toString());
+            showitem.put("type_image", ImageID);
             listitem.add(showitem);
             //创建SimpleAdapter
-            SimpleAdapter simpleAdapter=new SimpleAdapter(getApplicationContext(),listitem,R.layout.item_detail,new String[]{"name","type_image"},new int[]{R.id.name,R.id.type_image});
+            SimpleAdapter simpleAdapter = new SimpleAdapter(getApplicationContext(), listitem, R.layout.item_detail, new String[]{"name", "type_image"}, new int[]{R.id.name, R.id.type_image});
             detail.setAlpha(0f);
             detail.setVisibility(View.GONE);
             detail.setAdapter(simpleAdapter);
             detail.setVisibility(View.VISIBLE);
             detail.animate().alpha(1f).setDuration(200).setListener(null);
             //清空listview
-            listView.setAdapter(new ArrayAdapter<String>(MainActivity.this,R.layout.listitem,new ArrayList<String>()));
+            listView.setAdapter(new ArrayAdapter<String>(MainActivity.this, R.layout.listitem, new ArrayList<String>()));
         }
     }
 
@@ -351,19 +353,19 @@ public class MainActivity extends Permission implements View.OnClickListener, Ad
             switch (arg0) {
                 case 0:
                     animation = new TranslateAnimation(one, 0, 0, 0);
-                    setBottomImage(videoLayout,R.mipmap.indeximg_pressed);
-                    setBottomImage(musicLayout,R.mipmap.myimg);
-                    videoLayout.setTextColor(Color.	argb(255,18,150,219));
+                    setBottomImage(videoLayout, R.mipmap.indeximg_pressed);
+                    setBottomImage(musicLayout, R.mipmap.myimg);
+                    videoLayout.setTextColor(Color.argb(255, 18, 150, 219));
                     musicLayout.setTextColor(Color.BLACK);
-                    MIUISetStatusBarLightMode(MainActivity.this,true);
+                    MIUISetStatusBarLightMode(MainActivity.this, true);
                     break;
                 case 1:
                     animation = new TranslateAnimation(offset, one, 0, 0);
-                    setBottomImage(videoLayout,R.mipmap.indeximg);
-                    setBottomImage(musicLayout,R.mipmap.myimg_pressed);
-                    musicLayout.setTextColor(Color.	argb(255,18,150,219));
+                    setBottomImage(videoLayout, R.mipmap.indeximg);
+                    setBottomImage(musicLayout, R.mipmap.myimg_pressed);
+                    musicLayout.setTextColor(Color.argb(255, 18, 150, 219));
                     videoLayout.setTextColor(Color.BLACK);
-                    MIUISetStatusBarLightMode(MainActivity.this,false);
+                    MIUISetStatusBarLightMode(MainActivity.this, false);
                     break;
             }
             //arg0为切换到的页的编码
@@ -384,27 +386,28 @@ public class MainActivity extends Permission implements View.OnClickListener, Ad
     }
 
     @Override
-    public void onClick(View view){
-        switch (view.getId()){
+    public void onClick(View view) {
+        switch (view.getId()) {
             case R.id.videoLayout:
                 //点击"视频“时切换到第一页
                 viewPager.setCurrentItem(0);
-                setBottomImage(videoLayout,R.mipmap.indeximg_pressed);
-                setBottomImage(musicLayout,R.mipmap.myimg);
-                videoLayout.setTextColor(Color.	argb(255,18,150,219));
+                setBottomImage(videoLayout, R.mipmap.indeximg_pressed);
+                setBottomImage(musicLayout, R.mipmap.myimg);
+                videoLayout.setTextColor(Color.argb(255, 18, 150, 219));
                 musicLayout.setTextColor(Color.BLACK);
                 break;
             case R.id.musicLayout:
                 //点击“音乐”时切换的第二页
                 viewPager.setCurrentItem(1);
-                setBottomImage(videoLayout,R.mipmap.indeximg);
-                setBottomImage(musicLayout,R.mipmap.myimg_pressed);
-                musicLayout.setTextColor(Color.	argb(255,18,150,219));
+                setBottomImage(videoLayout, R.mipmap.indeximg);
+                setBottomImage(musicLayout, R.mipmap.myimg_pressed);
+                musicLayout.setTextColor(Color.argb(255, 18, 150, 219));
                 videoLayout.setTextColor(Color.BLACK);
                 break;
         }
     }
-    private void setBottomImage(TextView textView,int imageId){
+
+    private void setBottomImage(TextView textView, int imageId) {
         Drawable drawable;
         Bitmap originalBitmap = BitmapFactory.decodeResource(getResources(),
                 imageId);
@@ -416,38 +419,40 @@ public class MainActivity extends Permission implements View.OnClickListener, Ad
         matrix0.postScale(scale, scale);
         Bitmap changedBitmap = Bitmap.createBitmap(originalBitmap, 0, 0,
                 originalWidth, originalHeight, matrix0, true);
-        drawable=new BitmapDrawable(changedBitmap);
-        drawable.setBounds(0,0,0,0);
-        textView.setCompoundDrawablesWithIntrinsicBounds(null,drawable,null,null);
+        drawable = new BitmapDrawable(changedBitmap);
+        drawable.setBounds(0, 0, 0, 0);
+        textView.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
     }
-    private void sendGetRequest(final String name){
-        Log.e("TAG",name);
+
+    private void sendGetRequest(final String name) {
+        Log.e("TAG", name);
         AsyncHttpClient client = new AsyncHttpClient();
         /*https://www.metalgearjoe.cn/mn/search?search=%E8%8B%B9%E6%9E%9C
         http://api.choviwu.top/garbage/getGarbage?garbageName=*/
-        String url = "http://api.choviwu.top/garbage/getGarbage?garbageName="+name;
+        String url = "http://api.choviwu.top/garbage/getGarbage?garbageName=" + name;
         client.get(url, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int i, org.apache.http.Header[] headers, byte[] bytes) {
-                Log.e("TAG",new String(bytes));
-                Boolean isdone=false;
+                Log.e("TAG", new String(bytes));
+                Boolean isdone = false;
                 try {
-                    for(int j = 0; j<(new JSONObject(new String(bytes))).getJSONArray("data").length(); j++){
+                    for (int j = 0; j < (new JSONObject(new String(bytes))).getJSONArray("data").length(); j++) {
 //                        RelativeLayout.LayoutParams layoutParams=new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 //                        final TextView textView = new TextView(MainActivity.this);
 //                        textView.setLayoutParams(layoutParams);
                         listdata.add((new JSONObject(new String(bytes))).getJSONArray("data").getJSONObject(j).getString("gname"));
-                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MainActivity.this,R.layout.listitem,listdata);//listdata和str均可
+                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MainActivity.this, R.layout.listitem, listdata);//listdata和str均可
                         listView.setAdapter(arrayAdapter);
                         listView.setOnItemClickListener(MainActivity.this);
                     }
                     /*if(!isdone){
                         similar(bytes);//没找到完全相等的那个，然后展示一下相似的供选择
                     }*/
-                }catch (JSONException e){
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
+
             @Override
             public void onFailure(int i, org.apache.http.Header[] headers, byte[] bytes, Throwable throwable) {
                 Log.e("TAG", new String(bytes));
@@ -481,29 +486,29 @@ public class MainActivity extends Permission implements View.OnClickListener, Ad
                 break;
             case Crop.REQUEST_CROP:
 
-                if(data!=null){
-                    Bitmap bitmap=null;
+                if (data != null) {
+                    Bitmap bitmap = null;
                     try {
                         bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(uritempFile));
-                        Log.e(TAG,"裁剪完毕");
-                        Log.e(TAG,"图像大小="+bitmap.getByteCount());
+                        Log.e(TAG, "裁剪完毕");
+                        Log.e(TAG, "图像大小=" + bitmap.getByteCount());
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
 
-                    if(request_code==IMAGE_REQUEST_BACKGROUND) {
-                        Bitmap iconbitmap=Bitmap.createScaledBitmap(bitmap,1000,1000,true);
+                    if (request_code == IMAGE_REQUEST_BACKGROUND) {
+                        Bitmap iconbitmap = Bitmap.createScaledBitmap(bitmap, 1000, 1000, true);
                         backgroundImage.setImageBitmap(iconbitmap);
-                        acache.put("backgroundImage",iconbitmap);
+                        acache.put("backgroundImage", iconbitmap);
                         deleteSingleFile(Environment.getExternalStorageDirectory().getPath() + "/" + "small.jpg");
-                    }else if(request_code==IMAGE_REQUEST_ICON){
-                        Bitmap iconbitmap=Bitmap.createScaledBitmap(bitmap,250,250,true);
+                    } else if (request_code == IMAGE_REQUEST_ICON) {
+                        Bitmap iconbitmap = Bitmap.createScaledBitmap(bitmap, 250, 250, true);
                         icon.setImageBitmap(iconbitmap);
                         uploadtext.setText(null);
-                        acache.put("iconImage",iconbitmap);
+                        acache.put("iconImage", iconbitmap);
                         deleteSingleFile(Environment.getExternalStorageDirectory().getPath() + "/" + "small.jpg");
                     }
-                    request_code=-100;
+                    request_code = -100;
                 }
                 break;
             default:
@@ -549,6 +554,7 @@ public class MainActivity extends Permission implements View.OnClickListener, Ad
         uritempFile = Uri.parse("file://" + "/" + Environment.getExternalStorageDirectory().getPath() + "/" + "small.jpg");
         Crop.of(uri, uritempFile).asSquare().start(this);
     }
+
     private boolean deleteSingleFile(String filePath$Name) {
         File file = new File(filePath$Name);
         // 如果文件路径所对应的文件存在，并且是一个文件，则直接删除
@@ -565,78 +571,79 @@ public class MainActivity extends Permission implements View.OnClickListener, Ad
             return false;
         }
     }
-    public  String getMacAddress(Context context) {
 
-        String macAddress = null ;
+    public String getMacAddress(Context context) {
+
+        String macAddress = null;
         WifiManager wifiManager;
-        wifiManager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
-        WifiInfo info = ( null == wifiManager ? null : wifiManager.getConnectionInfo());
+        wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        WifiInfo info = (null == wifiManager ? null : wifiManager.getConnectionInfo());
 
-        if (!wifiManager.isWifiEnabled())
-        {
+        if (!wifiManager.isWifiEnabled()) {
             //必须先打开，才能获取到MAC地址
-            wifiManager.setWifiEnabled( true );
-            wifiManager.setWifiEnabled( false );
+            wifiManager.setWifiEnabled(true);
+            wifiManager.setWifiEnabled(false);
         }
-        if ( null != info) {
+        if (null != info) {
             macAddress = info.getMacAddress();
         }
         return macAddress;
     }
 
-    private void datainit(){
-        listdata=new ArrayList<String>();
+    private void datainit() {
+        listdata = new ArrayList<String>();
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         //查找布局文件用LayoutInflater.inflate
-        LayoutInflater inflater =getLayoutInflater();
+        LayoutInflater inflater = getLayoutInflater();
         View view1 = inflater.inflate(R.layout.index, null);
         View view2 = inflater.inflate(R.layout.my, null);
-        videoLayout = (TextView)findViewById(R.id.videoLayout);
-        musicLayout = (TextView)findViewById(R.id.musicLayout);
+        videoLayout = (TextView) findViewById(R.id.videoLayout);
+        musicLayout = (TextView) findViewById(R.id.musicLayout);
 
-        setBottomImage(videoLayout,R.mipmap.indeximg_pressed);
-        setBottomImage(musicLayout,R.mipmap.myimg);
-        videoLayout.setTextColor(Color.	argb(255,18,150,219));
+        setBottomImage(videoLayout, R.mipmap.indeximg_pressed);
+        setBottomImage(musicLayout, R.mipmap.myimg);
+        videoLayout.setTextColor(Color.argb(255, 18, 150, 219));
         musicLayout.setTextColor(Color.BLACK);
 
         videoLayout.setOnClickListener(this);
         musicLayout.setOnClickListener(this);
 
-        ImageButton opencamera=(ImageButton) findViewById(R.id.opencamera);
-        opencamera.setOnClickListener(new View.OnClickListener(){
+        ImageButton opencamera = (ImageButton) findViewById(R.id.opencamera);
+        opencamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent =new Intent(MainActivity.this, MyCameraActivity.class);
+                Intent intent = new Intent(MainActivity.this, MyCameraActivity.class);
                 startActivity(intent);
             }
         });
-        pageview =new ArrayList<View>();
+        pageview = new ArrayList<View>();
         //添加想要切换的界面
         pageview.add(view1);
         pageview.add(view2);
 
-        listView=(ListView) pageview.get(0).findViewById(R.id.listview);
-        history=(TextView) pageview.get(1).findViewById(R.id.history);
-        diary=(TextView) pageview.get(1).findViewById(R.id.diary);
-        individuation=(TextView) pageview.get(1).findViewById(R.id.individuation);
-        icon=(ImageView) pageview.get(1).findViewById(R.id.icon);
-        uploadtext=(TextView)  pageview.get(1).findViewById(R.id.uploadtext);
-        MIUISetStatusBarLightMode(MainActivity.this,true);
-        acache=ACache.get(MainActivity.this);
-        change_background=(RelativeLayout) pageview.get(1).findViewById(R.id.change_background);
-        dialog_view=(RelativeLayout)pageview.get(1).findViewById(R.id.dialog_view);
-        backgroundImage=(ImageView)pageview.get(1).findViewById(R.id.backgroundImage);
-        detail=pageview.get(0).findViewById(R.id.detail);
+        listView = (ListView) pageview.get(0).findViewById(R.id.listview);
+        history = (TextView) pageview.get(1).findViewById(R.id.history);
+        diary = (TextView) pageview.get(1).findViewById(R.id.diary);
+        individuation = (TextView) pageview.get(1).findViewById(R.id.individuation);
+        icon = (ImageView) pageview.get(1).findViewById(R.id.icon);
+        uploadtext = (TextView) pageview.get(1).findViewById(R.id.uploadtext);
+        MIUISetStatusBarLightMode(MainActivity.this, true);
+        acache = ACache.get(MainActivity.this);
+        change_background = (RelativeLayout) pageview.get(1).findViewById(R.id.change_background);
+        dialog_view = (RelativeLayout) pageview.get(1).findViewById(R.id.dialog_view);
+        backgroundImage = (ImageView) pageview.get(1).findViewById(R.id.backgroundImage);
+        detail = pageview.get(0).findViewById(R.id.detail);
     }
-    private void aCacheInit(){
-        mcache=ACache.get(MainActivity.this);
-        Bitmap acacheIcon=mcache.getAsBitmap("iconImage");
-        Bitmap acacheBackground=mcache.getAsBitmap("backgroundImage");
-        if(acacheIcon!=null){
+
+    private void aCacheInit() {
+        mcache = ACache.get(MainActivity.this);
+        Bitmap acacheIcon = mcache.getAsBitmap("iconImage");
+        Bitmap acacheBackground = mcache.getAsBitmap("backgroundImage");
+        if (acacheIcon != null) {
             icon.setImageBitmap(acacheIcon);
             uploadtext.setText(null);
         }
-        if(acacheBackground!=null){
+        if (acacheBackground != null) {
             backgroundImage.setImageBitmap(acacheBackground);
         }
     }
