@@ -109,6 +109,7 @@ public class MainActivity extends Permission implements View.OnClickListener, Ad
     private TextView individuation;
     private ImageView icon;
     private TextView uploadtext;
+    private String good=null;
     RelativeLayout change_background;
     RelativeLayout dialog_view;
     ListView detail;
@@ -214,7 +215,7 @@ public class MainActivity extends Permission implements View.OnClickListener, Ad
                                 if ("".equals(textName.getText().toString())) {
                                     listdata.clear();
                                 }
-
+                                good=s.toString();
                             }
                         });
 
@@ -227,8 +228,41 @@ public class MainActivity extends Permission implements View.OnClickListener, Ad
                                 //当actionId == XX_SEND 或者 XX_DONE时都触发
                                 //或者event.getKeyCode == ENTER 且 event.getAction == ACTION_DOWN时也触发
                                 //注意，这是一定要判断event != null。因为在某些输入法上会返回null。
-                                if ((event != null && KeyEvent.KEYCODE_ENTER == event.getKeyCode() && KeyEvent.ACTION_DOWN == event.getAction())) {
-                                    //search();
+                                if ((good!=null&&event != null && KeyEvent.KEYCODE_ENTER == event.getKeyCode() && KeyEvent.ACTION_DOWN == event.getAction())) {
+                                    List<Type> m = typeDao.selectByName(good);
+                                    String s=null;
+                                    if (m != null && !m.isEmpty()) {
+                                        s = m.get(0).getTYPE();
+                                    }else {
+                                        s="未知物品";
+                                    }
+                                    int ImageID = 0;
+                                    if(s.equals("干垃圾")){
+                                        ImageID=R.mipmap.gan;
+                                    }else if(s.equals("湿垃圾")){
+                                        ImageID = R.mipmap.shi;
+                                    }else if(s.equals("有害垃圾")){
+                                        ImageID = R.mipmap.you;
+                                    }else if(s.equals("可回收垃圾")){
+                                        ImageID = R.mipmap.ke;
+                                    }else{
+                                        ImageID = R.mipmap.notfound;
+                                    }
+                                    //操作生成卡片
+                                    List<Map<String, Object>> listitem = new ArrayList<Map<String, Object>>();
+                                    Map<String, Object> showitem = new HashMap<String, Object>();
+                                    showitem.put("name", good+":");
+                                    showitem.put("type_image", ImageID);
+                                    listitem.add(showitem);
+                                    //创建SimpleAdapter
+                                    SimpleAdapter simpleAdapter = new SimpleAdapter(getApplicationContext(), listitem, R.layout.item_detail, new String[]{"name", "type_image"}, new int[]{R.id.name, R.id.type_image});
+                                    detail.setAlpha(0f);
+                                    detail.setVisibility(View.GONE);
+                                    detail.setAdapter(simpleAdapter);
+                                    detail.setVisibility(View.VISIBLE);
+                                    detail.animate().alpha(1f).setDuration(500).setListener(null);
+                                    //清空listview
+                                    listView.setAdapter(new ArrayAdapter<String>(MainActivity.this, R.layout.listitem, new ArrayList<String>()));
 //                                    List<Type> types = typeDao.selectByName(textName.getText().toString());
 //                                    if (types.size()!=0){
 //                                        listdata.clear();
@@ -324,12 +358,29 @@ public class MainActivity extends Permission implements View.OnClickListener, Ad
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         if (listView.equals(adapterView)) {
             Log.e("TAG", listdata.get(i).toString());
+            List<Type> m = typeDao.selectByName(listdata.get(i).toString());
+            String s=null;
+            if (m != null && !m.isEmpty()) {
+                s = m.get(0).getTYPE();
+            }else {
+                s="未知物品";
+            }
             int ImageID = 0;
-            ImageID = R.mipmap.shi;
+            if(s.equals("干垃圾")){
+                ImageID=R.mipmap.gan;
+            }else if(s.equals("湿垃圾")){
+                ImageID = R.mipmap.shi;
+            }else if(s.equals("有害垃圾")){
+                ImageID = R.mipmap.you;
+            }else if(s.equals("可回收垃圾")){
+                ImageID = R.mipmap.ke;
+            }else{
+                ImageID = R.mipmap.notfound;
+            }
             //操作生成卡片
             List<Map<String, Object>> listitem = new ArrayList<Map<String, Object>>();
             Map<String, Object> showitem = new HashMap<String, Object>();
-            showitem.put("name", listdata.get(i).toString());
+            showitem.put("name", listdata.get(i)+":");
             showitem.put("type_image", ImageID);
             listitem.add(showitem);
             //创建SimpleAdapter
@@ -338,7 +389,7 @@ public class MainActivity extends Permission implements View.OnClickListener, Ad
             detail.setVisibility(View.GONE);
             detail.setAdapter(simpleAdapter);
             detail.setVisibility(View.VISIBLE);
-            detail.animate().alpha(1f).setDuration(200).setListener(null);
+            detail.animate().alpha(1f).setDuration(500).setListener(null);
             //清空listview
             listView.setAdapter(new ArrayAdapter<String>(MainActivity.this, R.layout.listitem, new ArrayList<String>()));
         }

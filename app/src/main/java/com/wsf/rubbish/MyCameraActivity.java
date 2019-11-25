@@ -368,7 +368,7 @@ public class MyCameraActivity extends Permission implements View.OnClickListener
         }
     }
 
-    private void sendGetRequest(final String name, final Button button) {
+    /*private void sendGetRequest(final String name, final Button button) {
         AsyncHttpClient client = new AsyncHttpClient();
         String url = "http://api.choviwu.top/garbage/getGarbage?garbageName=" + name;
         client.get(url, new AsyncHttpResponseHandler() {
@@ -397,7 +397,7 @@ public class MyCameraActivity extends Permission implements View.OnClickListener
             public void onFailure(int i, org.apache.http.Header[] headers, byte[] bytes, Throwable throwable) {
             }
         });
-    }
+    }*/
 
     private void showButton() {
         //Activity不允许在子线程中进行UI操作
@@ -414,16 +414,24 @@ public class MyCameraActivity extends Permission implements View.OnClickListener
                     final Button button = new Button(MyCameraActivity.this);
                     Drawable drawable = ContextCompat.getDrawable(MyCameraActivity.this, R.drawable.shadow);
                     button.setBackground(drawable);
-                    button.setText(list.get(i));
+                    List<Type> m = typeDao.selectByName(list.get(i));
+                    String s=null;
+                    if (m != null && !m.isEmpty()) {
+                        s = m.get(0).getTYPE();
+                    }else {
+                        s="未知物品";
+                    }
+                    button.setText(list.get(i)+":"+s);
+                    button.setTextSize(20f);
                     button.setTextColor(Color.WHITE);
                     button.setLayoutParams(layoutParams);
                     buttonLayout.addView(button);
-                    button.setOnClickListener(new Button.OnClickListener() {
+                    /*button.setOnClickListener(new Button.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             sendGetRequest(button.getText().toString(), button);
                         }
-                    });
+                    });*/
                 }
             }
         });
@@ -446,12 +454,12 @@ public class MyCameraActivity extends Permission implements View.OnClickListener
                 button.setTextColor(Color.WHITE);
                 button.setLayoutParams(layoutParams);
                 buttonLayout.addView(button);
-                button.setOnClickListener(new Button.OnClickListener() {
+                /*button.setOnClickListener(new Button.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         sendGetRequest(button.getText().toString(), button);
                     }
-                });
+                });*/
             }
         } catch (JSONException e) {
             e.printStackTrace();
