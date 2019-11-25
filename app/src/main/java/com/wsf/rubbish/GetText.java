@@ -47,6 +47,16 @@ public class GetText implements TextWatcher {
         sendGetRequest(charSequence.toString(),button);
     }
 
+//    public void getData(){
+//        for(int j = 0; j<(new JSONObject(new String(bytes))).getJSONArray("data").length(); j++){
+//            RelativeLayout.LayoutParams layoutParams=new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//            final TextView textView = new TextView(context);
+//            textView.setLayoutParams(layoutParams);
+//            textView.setText((new JSONObject(new String(bytes))).getJSONArray("data").getJSONObject(j).getString("gname"));
+//            textListLayout.addView(textView);
+//        }
+//    }
+
     /**
      * 编辑框的内容改变以后,用户没有继续输入时 的回调方法
      */

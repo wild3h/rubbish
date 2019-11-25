@@ -205,7 +205,15 @@ public class MainActivity extends Permission implements View.OnClickListener, Ad
                                     listView.setAdapter(new ArrayAdapter<String>(MainActivity.this, R.layout.listitem, new ArrayList<String>()));
                                 } else {
                                     listdata.clear();
-                                    sendGetRequest(s.toString());
+                                    List<Type> goods = typeDao.vagueQuery(s.toString());
+
+                                    for(Type good : goods){
+                                        listdata.add(good.getITEM());
+                                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MainActivity.this, R.layout.listitem, listdata);//listdata和str均可
+                                        listView.setAdapter(arrayAdapter);
+                                        listView.setOnItemClickListener(MainActivity.this);
+                                    }
+                                    //sendGetRequest(s.toString());
                                 }
                             }
 

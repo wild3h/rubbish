@@ -34,6 +34,12 @@ object SQLUtil {
         return db.select(table).whereSimple("$condition = ?", name)
     }
 
+    fun vagueQuery(table: String,
+                   condition: String,
+                   name: String): SelectQueryBuilder {
+        return db.select(table).whereSimple("$condition like ?", name)
+    }
+
     fun queryCount(table: String): Cursor? {
         return db.query(table, arrayOf("count(*)"), null, null, null, null, null)
     }

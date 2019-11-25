@@ -38,4 +38,6 @@ class TypeDao {
 
 
     fun selectByName(name: String): List<Type>? = SQLUtil.queryByCondition("TYPE", "ITEM", name).parseList(TypeParser)
+
+    fun vagueQuery(name: String) : List<Type>? = SQLUtil.vagueQuery("TYPE", "ITEM", "%$name%").parseList(TypeParser)
 }
