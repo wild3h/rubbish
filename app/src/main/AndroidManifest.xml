@@ -34,6 +34,7 @@
         </activity>
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
         <activity android:name="com.cgc.ui.activity.HistoryActivity"></activity>
+        <activity android:name="com.cgc.ui.activity.OtherActivity"></activity>
     </application>
 
 </manifest>

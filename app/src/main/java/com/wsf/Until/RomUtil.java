@@ -23,7 +23,7 @@ public class RomUtil {
     public static final String ROM_LENOVO = "LENOVO";
     public static final String ROM_SAMSUNG = "SAMSUNG";
 
-    private static final String KEY_VERSION_MIUI = "ro.miui.ui.version.name";
+    private static final String KEY_VERSION_MIUI = "ro.miui.ui.version.IMAGE_ID";
     private static final String KEY_VERSION_EMUI = "ro.build.version.emui";
     private static final String KEY_VERSION_OPPO = "ro.build.version.opporom";
     private static final String KEY_VERSION_SMARTISAN = "ro.smartisan.version";
@@ -131,7 +131,7 @@ public class RomUtil {
     //
     //        }
     //    }
-    //    public static String getProp(String name) {
-    //        return props.getProperty(name, Build.UNKNOWN);
+    //    public static String getProp(String IMAGE_ID) {
+    //        return props.getProperty(IMAGE_ID, Build.UNKNOWN);
     //    }
 }

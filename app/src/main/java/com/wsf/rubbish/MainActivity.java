@@ -259,11 +259,11 @@ public class MainActivity extends Permission implements View.OnClickListener, Ad
                                     //操作生成卡片
                                     List<Map<String, Object>> listitem = new ArrayList<Map<String, Object>>();
                                     Map<String, Object> showitem = new HashMap<String, Object>();
-                                    showitem.put("name", good+":");
+                                    showitem.put("IMAGE_ID", good+":");
                                     showitem.put("type_image", ImageID);
                                     listitem.add(showitem);
                                     //创建SimpleAdapter
-                                    SimpleAdapter simpleAdapter = new SimpleAdapter(getApplicationContext(), listitem, R.layout.item_detail, new String[]{"name", "type_image"}, new int[]{R.id.name, R.id.type_image});
+                                    SimpleAdapter simpleAdapter = new SimpleAdapter(getApplicationContext(), listitem, R.layout.item_detail, new String[]{"IMAGE_ID", "type_image"}, new int[]{R.id.name, R.id.type_image});
                                     detail.setAlpha(0f);
                                     detail.setVisibility(View.GONE);
                                     detail.setAdapter(simpleAdapter);
@@ -388,11 +388,11 @@ public class MainActivity extends Permission implements View.OnClickListener, Ad
             //操作生成卡片
             List<Map<String, Object>> listitem = new ArrayList<Map<String, Object>>();
             Map<String, Object> showitem = new HashMap<String, Object>();
-            showitem.put("name", listdata.get(i)+":");
+            showitem.put("IMAGE_ID", listdata.get(i)+":");
             showitem.put("type_image", ImageID);
             listitem.add(showitem);
             //创建SimpleAdapter
-            SimpleAdapter simpleAdapter = new SimpleAdapter(getApplicationContext(), listitem, R.layout.item_detail, new String[]{"name", "type_image"}, new int[]{R.id.name, R.id.type_image});
+            SimpleAdapter simpleAdapter = new SimpleAdapter(getApplicationContext(), listitem, R.layout.item_detail, new String[]{"IMAGE_ID", "type_image"}, new int[]{R.id.name, R.id.type_image});
             detail.setAlpha(0f);
             detail.setVisibility(View.GONE);
             detail.setAdapter(simpleAdapter);

@@ -12,7 +12,8 @@ class HistoryPresenterImpl(var historyView: HistoryView) : HistoryPresenter {
     override fun loadData() {
         val modelDao = ModelDao()
         modelDao.getHistory()?.also {
-            historyView.loadMore(it)
+            var his = it.reversed()
+            historyView.loadMore(his)
         }
     }
 }

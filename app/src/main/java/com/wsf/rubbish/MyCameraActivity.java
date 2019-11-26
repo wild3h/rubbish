@@ -26,8 +26,10 @@ import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 
 import com.baidu.aip.imageclassify.AipImageClassify;
+import com.cgc.dao.ImageDao;
 import com.cgc.dao.ModelDao;
 import com.cgc.dao.TypeDao;
+import com.cgc.pojo.Image;
 import com.cgc.pojo.Model;
 import com.cgc.pojo.Type;
 import com.cgc.util.SQLUtil;
@@ -65,6 +67,9 @@ public class MyCameraActivity extends Permission implements View.OnClickListener
      */
     private String savePath;
     private String path;
+
+    private String IMAGE_ID;
+
     private SurfaceHolder surfaceHolder;
     private SurfaceView surfaceView;
 
@@ -276,9 +281,14 @@ public class MyCameraActivity extends Permission implements View.OnClickListener
     @Override
     public void onPictureTaken(byte[] data, Camera camera) {
 
-        path = savePath + "XiuMF_" + System.currentTimeMillis() + ".jpg";
+        IMAGE_ID = "XiuMF_" + System.currentTimeMillis() + ".jpg";
+        path = savePath + IMAGE_ID;
         File file = new File(path);
         OutputStream output = null;
+
+        Image img = new Image(IMAGE_ID,path);
+        ImageDao.INSTANCE.insert(img);
+
         try {
             output = new FileOutputStream(file);
             output.write(data);
@@ -368,9 +378,9 @@ public class MyCameraActivity extends Permission implements View.OnClickListener
         }
     }
 
-    /*private void sendGetRequest(final String name, final Button button) {
+    /*private void sendGetRequest(final String IMAGE_ID, final Button button) {
         AsyncHttpClient client = new AsyncHttpClient();
-        String url = "http://api.choviwu.top/garbage/getGarbage?garbageName=" + name;
+        String url = "http://api.choviwu.top/garbage/getGarbage?garbageName=" + IMAGE_ID;
         client.get(url, new AsyncHttpResponseHandler() {
 
             @Override
@@ -379,8 +389,8 @@ public class MyCameraActivity extends Permission implements View.OnClickListener
                 Boolean isdone = false;
                 try {
                     for (int j = 0; j < (new JSONObject(new String(bytes))).getJSONArray("data").length(); j++) {
-                        if ((new JSONObject(new String(bytes))).getJSONArray("data").getJSONObject(j).getString("gname").equals(name)) {
-                            button.setText(name + (new JSONObject(new String(bytes))).getJSONArray("data").getJSONObject(j).getString("gtype"));
+                        if ((new JSONObject(new String(bytes))).getJSONArray("data").getJSONObject(j).getString("gname").equals(IMAGE_ID)) {
+                            button.setText(IMAGE_ID + (new JSONObject(new String(bytes))).getJSONArray("data").getJSONObject(j).getString("gtype"));
                             isdone = true;
                             break;
                         }
@@ -533,7 +543,7 @@ public class MyCameraActivity extends Permission implements View.OnClickListener
                             List<Type> m = typeDao.selectByName(n);
                             if (m != null && !m.isEmpty()) {
                                 String s = m.get(0).getTYPE();
-                                Model l = new Model(n, s, "", "");
+                                Model l = new Model(n, s, IMAGE_ID, "");
                                 modelDao.insert(l);
                             }
                         }

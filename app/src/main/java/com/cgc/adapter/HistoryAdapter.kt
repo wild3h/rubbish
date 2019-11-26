@@ -16,6 +16,19 @@ import com.cgc.widget.LoadMoreView
 class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.HistoryHolder>() {
     private var list = ArrayList<Model>()
 
+    //私有属性
+    private var onItemClickListener: OnItemClickListener? = null
+
+    //setter方法
+    fun setOnItemClickListener(onItemClickListener: OnItemClickListener) {
+        this.onItemClickListener = onItemClickListener
+    }
+
+    //回调接口
+    interface OnItemClickListener {
+        fun onItemClick(v: View, position: Int)
+    }
+
     fun updateList(list: List<Model>?) {
         list?.let {
             this.list.clear()
@@ -58,6 +71,15 @@ class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.HistoryHolder>() {
         val itemView = holder.itemView as HistoryItemView
         //条目刷新
         itemView.setData(data)
+
+        //实现点击效果
+        holder.itemView.setOnClickListener { v ->
+            onItemClickListener?.onItemClick(v, position)
+        }
+    }
+
+    fun getItem(position: Int): Model {
+        return list[position]
     }
 
     class HistoryHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
